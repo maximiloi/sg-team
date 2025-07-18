@@ -1,2 +1,7 @@
 @import './normalize.scss';
+@import './scss/fonts.scss';
 @import './style.scss';
+
+@import './scss/header.scss';
+@import './scss/logo.scss';
+@import './scss/nav.scss';

@@ -1,3 +1,36 @@
+:root {
+  --yellow: #f5e55a;
+  --gray: #d3d3d2;
+  --white: #ffffff;
+  --black: #000000;
+  --xl: 1280px;
+  --lg: 1024px;
+}
+
 body {
-  background-color: #ffffff;
+  background-color: var(--white);
+
+  font-family: 'Inter', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 16px;
+}
+
+.container {
+  max-width: var(--xl);
+  margin: 0 auto;
+}
+
+.button {
+  background-color: #fff;
+  border: 1px solid var(--black);
+  padding: 0.5rem 1rem;
+  font-size: 1.5rem;
+  transition: all 0.4s ease;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--yellow);
+  }
 }

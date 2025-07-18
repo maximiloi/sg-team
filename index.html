@@ -5,23 +5,34 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+    rel="stylesheet">
   <title>Super Garage Team — любимый сервис вашего автомобиля</title>
 </head>
 
 <body>
-  <header class="container">
-    <div class="logo">
-      <dotlottie-wc src="./public/logo-gears.lottie" style="width: 150px;height: 150px" speed="0.5" autoplay
-        loop></dotlottie-wc>
+  <header class="header">
+    <div class="container header__container">
+      <div class="logo">
+        <dotlottie-wc src="./public/logo-gears.lottie" style="width: 150px;height: 150px" speed="0.5" autoplay
+          loop></dotlottie-wc>
+        <p class="logo__title rubik-700"><span>Super Garage</span>Team</p>
+      </div>
+      <nav class="nav">
+        <ul class="nav__list">
+          <li class="nav__item"><a href="" class="nav__link">Ремонт</a></li>
+          <li class="nav__item"><a href="" class="nav__link">
+              Техническое обслуживание </a></li>
+          <li class="nav__item"><a href="" class="nav__link">Диагностика</a></li>
+        </ul>
+      </nav>
+      <button class="header__button button">Заказать звонок</button>
     </div>
-    <nav class="nav">
-      <ul class="nav__list">
-        <li class="nav__item"><a href="" class="nav__link"></a></li>
-        <li class="nav__item"><a href="" class="nav__link"></a></li>
-        <li class="nav__item"><a href="" class="nav__link"></a></li>
-        <li class="nav__item"><a href="" class="nav__link"></a></li>
-      </ul>
-    </nav>
   </header>
   <script type="module" src="/src/main.js"></script>
   <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>

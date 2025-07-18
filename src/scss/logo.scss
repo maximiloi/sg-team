@@ -1,0 +1,28 @@
+.logo {
+  display: flex;
+
+  &__title {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 2rem;
+
+    &::after {
+      position: absolute;
+      top: 43px;
+      right: 5px;
+      z-index: -1;
+
+      content: '';
+
+      width: 150px;
+      height: 20px;
+
+      background-color: var(--yellow);
+    }
+  }
+}
