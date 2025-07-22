@@ -69,8 +69,17 @@
 
   &__text {
     margin-top: -8rem;
-    font-weight: 300;
     line-height: 1.8;
+  }
+
+  &__line {
+    position: absolute;
+    z-index: -1;
+
+    width: 100%;
+    bottom: 60px;
+    left: 0;
+    border-top: solid 3px var(--gray);
   }
 
   &::before {
