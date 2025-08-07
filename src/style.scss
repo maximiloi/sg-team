@@ -1,10 +1,12 @@
 :root {
   --yellow: #f5e55a;
   --gray: #d3d3d2;
+  --light-gray: #ececec;
   --white: #ffffff;
   --black: #000000;
   --xl: 1280px;
   --lg: 1024px;
+  --md: 768px;
 }
 
 body {
@@ -33,4 +35,8 @@ body {
   &:hover {
     background-color: var(--yellow);
   }
+}
+
+img {
+  border-radius: 8px;
 }

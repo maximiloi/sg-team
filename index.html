@@ -67,12 +67,12 @@
         <div class="performed__container">
           <div class="performed__inner">
             <h4 class="performed__title"><span id="outCar">100</span>+</h4>
-            <p class="performed__text">отремонтированных автомобиля в прошлом году</p>
+            <p class="performed__text">отремонтированных автомобилей за прошлый год</p>
           </div>
           <div class="performed__line"></div>
           <div class="performed__inner">
             <h4 class="performed__title"><span id="outTo">320</span>+</h4>
-            <p class="performed__text">технически обслуженных автомобиля в прошлом году</p>
+            <p class="performed__text">прошли у нас техническое обслуживание в прошлом году</p>
           </div>
         </div>
         <picture class="performed__images performed__images">
@@ -87,32 +87,98 @@
         </p>
       </div>
     </section>
+
     <section class="carusel">
-      <div class="container carusel__container">
+      <div class="container">
+        <div class="carusel__inner">
+          <div class="carusel__box">
+            <div class="carusel__photos">
+              <picture class="carusel__photo active" data-index="0">
+                <source srcset="./public/sgt-04.jpg, ./public/sgt-04@2x.jpg 2x">
+                <img src="./public/sgt-04.jpg" alt="Описание изображения" width="262px" height="350px">
+              </picture>
+              <picture class="carusel__photo" data-index="1">
+                <source srcset="./public/sgt-05.jpg, ./public/sgt-05@2x.jpg 2x">
+                <img src="./public/sgt-05.jpg" alt="Описание изображения" width="262px" height="350px">
+              </picture>
+              <picture class="carusel__photo" data-index="2">
+                <source srcset="./public/sgt-06.jpg, ./public/sgt-06@2x.jpg 2x">
+                <img src="./public/sgt-06.jpg" alt="Описание изображения" width="262px" height="350px">
+              </picture>
+              <picture class="carusel__photo" data-index="3">
+                <source srcset="./public/sgt-07.jpg, ./public/sgt-07@2x.jpg 2x">
+                <img src="./public/sgt-07.jpg" alt="Описание изображения" width="262px" height="350px">
+              </picture>
+            </div>
+          </div>
 
-        <div class="carusel__photos">
-          <div class="carusel__photo active">
-            <img src="https://picsum.photos/id/1015/300/150" alt="Фото 1">
+          <div class="carusel__buttons">
+            <button class="carusel__button active" data-index="0">
+              <span>Плановое ТО</span>
+              Регулярное обслуживание вашего автомобиля
+            </button>
+            <button class="carusel__button" data-index="1">
+              <span>Диагностика и ремонт двигателя</span>
+              Профессиональная помощь при любых проблемах с двигателем
+            </button>
+            <button class="carusel__button" data-index="2">
+              <span>Ремонт ходовой части</span>
+              Восстановление подвески и ходовой для безопасной езды
+            </button>
+            <button class="carusel__button" data-index="3">
+              <span>Тюнинг автомобиля</span>
+              Расскажите о своих пожеланиях и мы обсудим ваш проект
+            </button>
           </div>
-          <div class="carusel__photo">
-            <img src="https://picsum.photos/id/1016/300/150" alt="Фото 2">
-          </div>
-          <div class="carusel__photo">
-            <img src="https://picsum.photos/id/1018/300/150" alt="Фото 3">
-          </div>
-          <div class="carusel__photo">
-            <img src="https://picsum.photos/id/1020/300/150" alt="Фото 4">
-          </div>
-        </div>
-
-        <div class="carusel__buttons">
-          <button data-index="0" class="active">Кнопка 1</button>
-          <button data-index="1">Кнопка 2</button>
-          <button data-index="2">Кнопка 3</button>
-          <button data-index="3">Кнопка 4</button>
         </div>
       </div>
     </section>
+
+    <section class="accordion">
+      <div class="container accordion__container">
+        <h2 class="accordion__title">Почему выбирают нас</h2>
+        <div class="accordion__items">
+          <div class="accordion__item">
+            <button class="accordion__toggle">Комплексный подход</button>
+            <div class="accordion__content">
+              <p>Мы предлагаем широкий спектр услуг по ремонту и техническому обслуживанию автомобилей.</p>
+            </div>
+          </div>
+          <div class="accordion__item">
+            <button class="accordion__toggle">Использование качественных запчастей</button>
+            <div class="accordion__content">
+              <p>Гарантируем высокое качество выполняемых работ благодаря использованию оригинальных запчастей или
+                качественных аналогов.</p>
+            </div>
+          </div>
+          <div class="accordion__item">
+            <button class="accordion__toggle">Гарантия качества</button>
+            <div class="accordion__content">
+              <p>Все работы сопровождаются официальной гарантией. Вы уверены в надежности наших решений.</p>
+            </div>
+          </div>
+          <div class="accordion__item">
+            <button class="accordion__toggle">Профессионализм и опыт</button>
+            <div class="accordion__content">
+              <p>Наши специалисты имеют многолетний опыт и постоянно повышают квалификацию.</p>
+            </div>
+          </div>
+          <div class="accordion__item">
+            <button class="accordion__toggle">Прозрачность и открытость</button>
+            <div class="accordion__content">
+              <p>Вы всегда в курсе всех этапов ремонта и стоимости работ — никаких скрытых платежей.</p>
+            </div>
+          </div>
+          <div class="accordion__item">
+            <button class="accordion__toggle">Индивидуальный подход</button>
+            <div class="accordion__content">
+              <p>Мы подбираем решения под конкретные задачи и бюджет каждого клиента.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
   <script type="module" src="/src/main.js"></script>
   <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js" type="module"></script>

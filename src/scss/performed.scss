@@ -45,7 +45,8 @@
       background-image: url('./public/arrow.svg');
       background-repeat: no-repeat;
       background-size: 40px 40px;
-      background-position: 50% 70%;
+      background-position: 50% 20%;
+      transform: scaleX(-1);
     }
   }
 
