@@ -35,6 +35,14 @@ body {
   &:hover {
     background-color: var(--yellow);
   }
+
+  &__modal {
+    background-color: var(--yellow);
+
+    &:hover {
+      background-color: var(--white);
+    }
+  }
 }
 
 img {
