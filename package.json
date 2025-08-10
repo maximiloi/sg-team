@@ -11,5 +11,10 @@
   "devDependencies": {
     "sass": "^1.89.2",
     "vite": "^7.0.4"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0"
   }
 }
