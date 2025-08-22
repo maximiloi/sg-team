@@ -19,9 +19,10 @@ import { useState } from 'react';
 import { CardFooter } from '../ui/card';
 
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: 'Имя должно содержать хотя бы 2 буквы 😊',
-  }),
+  username: z
+    .string()
+    .regex(/^[А-Яа-яA-Za-z]+$/, { message: 'Можно вводить только буквы 😊' })
+    .min(2, { message: 'Имя должно содержать хотя бы 2 буквы 😊' }),
   phone: z
     .string()
     .min(18, { message: 'Укажите номер в формате +7 (999) 123-45-67' }),
@@ -62,7 +63,18 @@ export default function FormTelegram() {
             <FormItem>
               <FormLabel>Как к вам обращаться?</FormLabel>
               <FormControl>
-                <Input {...field} placeholder='Иван' />
+                <Input
+                  {...field}
+                  placeholder='Иван'
+                  onChange={(e) => {
+                    // оставляем только буквы (русские и латинские)
+                    const value = e.target.value.replace(
+                      /[^А-Яа-яA-Za-z]/g,
+                      ''
+                    );
+                    field.onChange(value);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
