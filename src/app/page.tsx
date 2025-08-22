@@ -1,4 +1,3 @@
-import FormTelegram from '@/components/components/FormTelegram';
 import {
   Card,
   CardContent,
@@ -6,6 +5,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+
+import FormTelegram from '@/components/components/FormTelegram';
 
 export default function Home() {
   return (
