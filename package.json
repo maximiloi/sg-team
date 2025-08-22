@@ -2,6 +2,7 @@
   "name": "sg-team",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
@@ -14,6 +15,8 @@
     "@radix-ui/react-slot": "^1.2.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.1",
+    "grammy": "^1.38.1",
     "lucide-react": "^0.540.0",
     "next": "15.5.0",
     "react": "19.1.0",

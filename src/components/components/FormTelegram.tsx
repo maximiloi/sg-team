@@ -30,6 +30,7 @@ const formSchema = z.object({
 
 export default function FormTelegram() {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,9 +40,26 @@ export default function FormTelegram() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    setSubmitted(true);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        const errorData = await res.json();
+        console.error(errorData);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (submitted) {
@@ -84,7 +102,7 @@ export default function FormTelegram() {
         <FormField
           control={form.control}
           name='phone'
-          render={({ field }) => (
+          render={() => (
             <FormItem>
               <FormLabel>Ваш номер телефона</FormLabel>
               <FormControl>
@@ -108,9 +126,10 @@ export default function FormTelegram() {
           )}
         />
 
-        <Button className='w-full' type='submit'>
-          📩 Отправить заявку
+        <Button className='w-full' type='submit' disabled={isSubmitting}>
+          {isSubmitting ? 'Отправка...' : '📩 Отправить заявку'}
         </Button>
+
         <CardFooter>
           <p className='text-sm text-gray-500 text-center'>
             Мы используем номер только для связи. Никакого спама ✨
