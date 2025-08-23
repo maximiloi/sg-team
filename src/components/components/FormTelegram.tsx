@@ -13,7 +13,7 @@ import InputFirstName from '../ui/InputFirstName';
 import InputPhoneNumber from '../ui/InputPhoneNumber';
 
 const formSchema = z.object({
-  username: z
+  firstName: z
     .string()
     .regex(/^[А-Яа-яA-Za-z]+$/, { message: 'Можно вводить только буквы 😊' })
     .min(2, { message: 'Имя должно содержать хотя бы 2 буквы 😊' }),
@@ -22,13 +22,18 @@ const formSchema = z.object({
     .min(18, { message: 'Укажите номер в формате +7 (999) 123-45-67' }),
 });
 
+type FormValues = {
+  firstName: string;
+  phone: string;
+};
+
 export default function FormTelegram() {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { username: '', phone: '' },
+    defaultValues: { firstName: '', phone: '' },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -60,8 +65,8 @@ export default function FormTelegram() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-        <InputFirstName control={form.control} />
-        <InputPhoneNumber control={form.control} />
+        <InputFirstName<FormValues> control={form.control} name='firstName' />
+        <InputPhoneNumber<FormValues> control={form.control} name='phone' />
 
         <Button className='w-full' type='submit' disabled={isSubmitting}>
           {isSubmitting ? 'Отправка...' : '📩 Отправить заявку'}

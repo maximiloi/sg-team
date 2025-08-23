@@ -7,22 +7,22 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Control, Controller, FieldValues } from 'react-hook-form';
+import { Control, Controller, FieldValues, Path } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
 
-interface InputPhoneNumberProps {
-  control: Control<FieldValues>;
-  name?: string;
+interface InputPhoneNumberProps<T extends FieldValues> {
+  control: Control<T>;
+  name: Path<T>;
   label?: string;
   placeholder?: string;
 }
 
-export default function InputPhoneNumber({
+export default function InputPhoneNumber<T extends FieldValues>({
   control,
-  name = 'phone',
+  name,
   label = 'Ваш номер телефона',
   placeholder = '+7 (___) ___-__-__',
-}: InputPhoneNumberProps) {
+}: InputPhoneNumberProps<T>) {
   return (
     <FormField
       control={control}

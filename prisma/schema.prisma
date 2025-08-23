@@ -16,7 +16,8 @@ datasource db {
 
 model Client {
   id        String    @id @default(uuid())
-  username  String
+  firstName String
+  lastName  String?
   phone     String    @unique
   createdAt DateTime  @default(now())
   requests  Request[]
