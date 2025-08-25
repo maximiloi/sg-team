@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-import FormTelegram from '@/components/components/FormTelegram';
+import FormTelegram from '@/components/FormTelegram';
 
 export default function Home() {
   return (
