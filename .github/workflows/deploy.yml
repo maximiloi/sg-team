@@ -51,7 +51,7 @@ jobs:
           cp -r bot deploy/
           cp package.json deploy/
           cp package-lock.json deploy/
-          cp ecosystem.config.js deploy/
+          cp ecosystem.config.cjs deploy/
 
       # 7. Добавляем сервер в known_hosts
       - name: Add server to known_hosts
@@ -67,7 +67,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           source: 'deploy/*'
-          target: '/var/www/sg-team'
+          target: '/var/www/sgt'
           strip_components: 1
 
       # 9. Создаём .env и ставим зависимости на сервере
@@ -78,7 +78,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /var/www/sg-team
+            cd /var/www/sgt
             cat > .env <<EOL
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -95,5 +95,5 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /var/www/sg-team
-            pm2 startOrReload ecosystem.config.js
+            cd /var/www/sgt
+            pm2 startOrReload ecosystem.config.cjs
