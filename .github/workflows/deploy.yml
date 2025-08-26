@@ -1,49 +1,79 @@
-name: Build GitHub and Deploy to VirtualServer
+name: Build GitHub and Deploy to VDS
 
 on:
   push:
     branches:
-      - main # деплой при пуше в main
+      - main
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
 
     steps:
-      # 1. Получаем код
-      - name: Checkout code
+      # 1. Клонируем репо
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      # 2. Устанавливаем Node.js
+      # 2. Ставим Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
-      # 3. Устанавливаем зависимости и билдим проект
+      # 3. Кэш npm
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('sg-team/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # 4. Устанавливаем зависимости
       - name: Install dependencies
         run: npm ci
+        working-directory: sg-team
 
-      - name: Build project
+      # 5. Сборка
+      - name: Build app
         run: npm run build
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
+        working-directory: sg-team
 
-      # 4. Копируем только нужные файлы на сервер
-      - name: Copy files via SSH
+      # 6. Архивация файлов для деплоя
+      - name: Archive production files
+        run: |
+          mkdir deploy
+          cp -r sg-team/.next deploy/
+          cp -r sg-team/public deploy/
+          cp -r sg-team/prisma deploy/
+          cp -r sg-team/bot deploy/
+          cp sg-team/package.json deploy/
+          cp sg-team/package-lock.json deploy/
+          cp sg-team/ecosystem.config.js deploy/
+
+      # 7. Добавляем сервер в known_hosts
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p 22 -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      # 8. Загружаем билд на сервер
+      - name: Upload build to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: '.next bot public prisma package.json package-lock.json ecosystem.config.js'
+          source: 'deploy/*'
           target: '/var/www/sg-team'
+          strip_components: 1
 
-      # 5. Создаем .env файл из GitHub Secrets
-      - name: Create .env file
+      # 9. Создаём .env и ставим зависимости на сервере
+      - name: Setup environment and install deps
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -56,9 +86,11 @@ jobs:
             TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
             TELEGRAM_MANAGER_IDS=${{ secrets.TELEGRAM_MANAGER_IDS }}
             EOL
+            npm ci --omit=dev
+            npx prisma migrate deploy
 
-      # 6. Устанавливаем prod-зависимости, запускаем миграции и перезапускаем pm2
-      - name: Install dependencies, run migrations and restart app
+      # 10. Перезапускаем pm2
+      - name: Restart PM2
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -66,6 +98,4 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /var/www/sg-team
-            npm ci --only=production
-            npx prisma migrate deploy
             pm2 startOrReload ecosystem.config.js
