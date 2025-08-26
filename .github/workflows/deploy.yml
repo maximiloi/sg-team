@@ -1,0 +1,73 @@
+name: Build GitHub and Deploy to VirtualServer
+
+on:
+  push:
+    branches:
+      - main # деплой при пуше в main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Получаем код
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Устанавливаем Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # 3. Устанавливаем зависимости и билдим проект
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      # 4. Копируем только нужные файлы на сервер
+      - name: Copy files via SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: |
+            .next
+            bot
+            public
+            prisma
+            package.json
+            package-lock.json
+          target: '/var/www/sg-team'
+
+      # 5. Создаем .env файл из GitHub Secrets
+      - name: Create .env file
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /var/www/sg-team
+            cat > .env <<EOL
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
+            TELEGRAM_MANAGER_IDS=${{ secrets.TELEGRAM_MANAGER_IDS }}
+            EOL
+
+      # 6. Устанавливаем prod-зависимости, запускаем миграции и перезапускаем pm2
+      - name: Install dependencies, run migrations and restart app
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /var/www/sg-team
+            npm ci --only=production
+            npx prisma migrate deploy
+            pm2 startOrReload ecosystem.config.js
