@@ -27,6 +27,10 @@ jobs:
 
       - name: Build project
         run: npm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
 
       # 4. Копируем только нужные файлы на сервер
       - name: Copy files via SSH
