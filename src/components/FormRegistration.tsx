@@ -1,10 +1,6 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
+import { signupAction } from '@/app/actions/signup';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -16,11 +12,22 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-// ✅ схема валидации с zod
+export type SignupData = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+// Схема валидации
 const schema = z
   .object({
-    login: z.string().min(3, 'Логин должен содержать минимум 3 символа'),
+    name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
+    email: z.string().email('Некорректный email'),
     password: z
       .string()
       .min(6, 'Пароль должен содержать минимум 6 символов')
@@ -42,15 +49,23 @@ export default function FormRegistration({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = (data: FormData) => {
-    console.log('Форма отправлена:', data);
+  const onSubmit = async (data: FormData) => {
+    try {
+      await signupAction({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      });
+    } catch (error) {
+      console.error('Ошибка регистрации:', error);
+    }
   };
 
   return (
@@ -59,22 +74,31 @@ export default function FormRegistration({
         <CardHeader>
           <CardTitle>Регистрация</CardTitle>
           <CardDescription>
-            Создайте новый аккаунт, указав логин и пароль
+            Создайте новый аккаунт, указав имя, email и пароль
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className='flex flex-col gap-6'>
-              {/* ЛОГИН */}
+              {/* Имя */}
               <div className='grid gap-2'>
-                <Label htmlFor='login'>Логин</Label>
-                <Input id='login' type='text' {...register('login')} />
-                {errors.login && (
-                  <p className='text-sm text-red-500'>{errors.login.message}</p>
+                <Label htmlFor='name'>Имя</Label>
+                <Input id='name' type='text' {...register('name')} />
+                {errors.name && (
+                  <p className='text-sm text-red-500'>{errors.name.message}</p>
                 )}
               </div>
 
-              {/* ПАРОЛЬ */}
+              {/* Email */}
+              <div className='grid gap-2'>
+                <Label htmlFor='email'>Email</Label>
+                <Input id='email' type='email' {...register('email')} />
+                {errors.email && (
+                  <p className='text-sm text-red-500'>{errors.email.message}</p>
+                )}
+              </div>
+
+              {/* Пароль */}
               <div className='grid gap-2'>
                 <Label htmlFor='password'>Пароль</Label>
                 <div className='relative'>
@@ -102,7 +126,7 @@ export default function FormRegistration({
                 </p>
               </div>
 
-              {/* ПОВТОР ПАРОЛЯ */}
+              {/* Подтверждение пароля */}
               <div className='grid gap-2'>
                 <Label htmlFor='confirmPassword'>Повтор пароля</Label>
                 <Input
@@ -117,9 +141,8 @@ export default function FormRegistration({
                 )}
               </div>
 
-              {/* КНОПКА */}
-              <Button type='submit' className='w-full'>
-                Зарегистрироваться
+              <Button type='submit' className='w-full' disabled={isSubmitting}>
+                {isSubmitting ? 'Регистрация...' : 'Зарегистрироваться'}
               </Button>
             </div>
           </form>
