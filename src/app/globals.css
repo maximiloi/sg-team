@@ -117,6 +117,11 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply font-sans bg-background text-foreground;
+  }
+
+  code,
+  pre {
+    @apply font-mono;
   }
 }
