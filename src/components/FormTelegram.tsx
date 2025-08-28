@@ -6,11 +6,10 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
+import { CardFooter } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
-import { CardFooter } from '../ui/card';
-
-import InputFirstName from '../ui/InputFirstName';
-import InputPhoneNumber from '../ui/InputPhoneNumber';
+import InputFirstName from '@/components/ui/InputFirstName';
+import InputPhoneNumber from '@/components/ui/InputPhoneNumber';
 
 const formSchema = z.object({
   firstName: z
