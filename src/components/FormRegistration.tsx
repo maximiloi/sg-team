@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -80,7 +81,6 @@ export default function FormRegistration({
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className='flex flex-col gap-6'>
-              {/* Имя */}
               <div className='grid gap-2'>
                 <Label htmlFor='name'>Имя</Label>
                 <Input id='name' type='text' {...register('name')} />
@@ -89,7 +89,6 @@ export default function FormRegistration({
                 )}
               </div>
 
-              {/* Email */}
               <div className='grid gap-2'>
                 <Label htmlFor='email'>Email</Label>
                 <Input id='email' type='email' {...register('email')} />
@@ -98,7 +97,6 @@ export default function FormRegistration({
                 )}
               </div>
 
-              {/* Пароль */}
               <div className='grid gap-2'>
                 <Label htmlFor='password'>Пароль</Label>
                 <div className='relative'>
@@ -126,7 +124,6 @@ export default function FormRegistration({
                 </p>
               </div>
 
-              {/* Подтверждение пароля */}
               <div className='grid gap-2'>
                 <Label htmlFor='confirmPassword'>Повтор пароля</Label>
                 <Input
@@ -141,8 +138,19 @@ export default function FormRegistration({
                 )}
               </div>
 
-              <Button type='submit' className='w-full' disabled={isSubmitting}>
-                {isSubmitting ? 'Регистрация...' : 'Зарегистрироваться'}
+              <Button
+                type='submit'
+                className='w-full cursor-pointer'
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    Регистрация...
+                  </>
+                ) : (
+                  'Зарегистрироваться'
+                )}
               </Button>
             </div>
           </form>
