@@ -15,6 +15,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://sgt-service.ru'),
   title: 'Автосервис - Super Garage Team | TO за час',
   description:
     'Профессиональный автосервис Super Garage Team. Ремонт и обслуживание автомобилей любых марок в короткие сроки с гарантией качества. ТО за час',
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
     'замена масла',
     'шиномонтаж',
   ],
-  authors: [{ name: 'Super Garage Team', url: 'https://sgt-garage.ru' }],
+  authors: [{ name: 'Super Garage Team', url: 'https://sgt-service.ru' }],
   creator: 'Super Garage Team',
   publisher: 'Super Garage Team',
   applicationName: 'Super Garage Team',
@@ -51,7 +52,7 @@ export const metadata: Metadata = {
     title: 'Автосервис - Super Garage Team',
     description:
       'Надёжный автосервис с гарантией качества. Ремонт и обслуживание автомобилей любых марок.',
-    url: 'https://sgt-garage.ru',
+    url: 'https://sgt-service.ru',
     siteName: 'Super Garage Team',
     images: [
       {
@@ -73,7 +74,7 @@ export const metadata: Metadata = {
   },
   category: 'Автосервис',
   alternates: {
-    canonical: 'https://sgt-garage.ru',
+    canonical: 'https://sgt-service.ru',
   },
   icons: {
     icon: '/favicon.ico',
