@@ -1,27 +1,12 @@
-import { Button } from '@/components/ui/button';
-import { redirect } from 'next/navigation';
-import { auth, signOut } from '../auth/authSetup';
+import RequestsList from '@/components/RequestsList';
+import { getRequests } from '../actions/requests';
 
 export default async function Page() {
-  const session = await auth();
+  const requests = await getRequests();
 
-  if (!session) {
-    redirect('/');
+  if (requests.length === 0) {
+    return null; // ничего не рендерим
   }
 
-  return (
-    <div>
-      <form
-        action={async () => {
-          'use server';
-          await signOut();
-        }}
-      >
-        <Button type='submit'>Sign Out</Button>
-      </form>
-
-      <div>Board</div>
-      <pre>{JSON.stringify(session, null, 2)}</pre>
-    </div>
-  );
+  return <RequestsList requests={requests} />;
 }
