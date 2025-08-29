@@ -19,7 +19,7 @@ export default async function Layout({
     <SidebarProvider>
       <SidebarBoard session={session} />
       <main className='w-full p-4'>
-        <SidebarTrigger />
+        <SidebarTrigger /> | Super Garage Team
         {children}
       </main>
     </SidebarProvider>
