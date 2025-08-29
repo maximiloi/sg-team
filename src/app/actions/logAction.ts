@@ -12,8 +12,7 @@ export async function logAction({
   requestId?: number;
   clientId?: string;
 }) {
-  const session = await auth(); // работает только на сервере
-  console.log('🚀 ~ logAction ~ session:', session);
+  const session = await auth();
 
   if (!session?.user?.id) {
     throw new Error('Пользователь не авторизован');
