@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
+import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -24,7 +25,6 @@ export type SignupData = {
   password: string;
 };
 
-// Схема валидации
 const schema = z
   .object({
     name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
@@ -64,6 +64,15 @@ export default function FormRegistration({
         email: data.email,
         password: data.password,
       });
+
+      const res = await signIn('credentials', {
+        redirect: true,
+        email: data.email,
+        password: data.password,
+        callbackUrl: '/board',
+      });
+
+      console.log(res);
     } catch (error) {
       console.error('Ошибка регистрации:', error);
     }
