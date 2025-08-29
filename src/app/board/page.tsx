@@ -5,7 +5,7 @@ export default async function Page() {
   const requests = await getRequests();
 
   if (requests.length === 0) {
-    return null; // ничего не рендерим
+    return null;
   }
 
   return <RequestsList requests={requests} />;
