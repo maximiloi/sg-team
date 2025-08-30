@@ -14,6 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Пользователь
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -23,11 +24,13 @@ model User {
   image         String?
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 
-  ActionLog ActionLog[]
+  actionLogs      ActionLog[]
+  requestsUpdated Request[]   @relation("RequestUpdatedBy")
 }
 
+// Клиент
 model Client {
   id        String   @id @default(uuid())
   firstName String
@@ -35,30 +38,47 @@ model Client {
   phone     String   @unique
   createdAt DateTime @default(now())
 
-  requests  Request[]
-  ActionLog ActionLog[]
+  requests Request[]
 }
 
+// Заявка
 model Request {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  client    Client   @relation(fields: [clientId], references: [id])
-  clientId  String
+  updatedAt DateTime @updatedAt
 
-  ActionLog ActionLog[]
+  client   Client @relation(fields: [clientId], references: [id])
+  clientId String
+
+  status RequestStatus @default(NEW)
+
+  // кто последний менял статус
+  updatedBy   User?   @relation("RequestUpdatedBy", fields: [updatedById], references: [id])
+  updatedById String?
+
+  // история действий
+  logs ActionLog[]
 }
 
+// История действий
 model ActionLog {
   id        Int      @id @default(autoincrement())
   action    String
   createdAt DateTime @default(now())
 
-  request   Request? @relation(fields: [requestId], references: [id])
-  requestId Int?
-
-  client   Client? @relation(fields: [clientId], references: [id])
-  clientId String?
+  request   Request @relation(fields: [requestId], references: [id])
+  requestId Int
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
+}
+
+// Статусы заявки на обратный звонок
+enum RequestStatus {
+  NEW // новая
+  IN_PROGRESS // оператор обрабатывает
+  POSTPONED // отложена
+  CONFIRMED // подтверждена запись
+  DONE // выполнена
+  CANCELLED // отменена / спам
 }
