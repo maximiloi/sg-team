@@ -1,3 +1,4 @@
+import { STATUS_LABEL } from '@/constants/statusLabels';
 import { RequestStatus } from '@/generated/prisma';
 import Link from 'next/link';
 import { Card, CardContent } from './ui/card';
@@ -26,7 +27,9 @@ export default function RequestsByStatusList({
 
   return (
     <>
-      <h2 className='text-xl font-semibold mt-8 mb-4'>{statusLabel[status]}</h2>
+      <h2 className='text-xl font-semibold mt-8 mb-4'>
+        {STATUS_LABEL[status]}
+      </h2>
       <Carousel>
         <CarouselContent>
           {requests.map((req) => (
@@ -64,12 +67,3 @@ export default function RequestsByStatusList({
     </>
   );
 }
-
-const statusLabel: Record<RequestStatus, string> = {
-  NEW: 'Новые заявки',
-  IN_PROGRESS: 'В обработке',
-  POSTPONED: 'Отложенные',
-  CONFIRMED: 'Подтверждённые',
-  DONE: 'Выполненные',
-  CANCELLED: 'Отменённые',
-};
