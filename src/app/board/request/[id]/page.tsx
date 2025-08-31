@@ -21,7 +21,7 @@ export default async function RequestPage({
         <CardContent className='space-y-2 p-4'>
           <h1 className='text-2xl font-bold mb-4'>
             Заявка #{request.id}
-            <span>({STATUS_LABEL[request.status]})</span>
+            <span> ({STATUS_LABEL[request.status]})</span>
           </h1>
           <div>
             <strong>Клиент:</strong> {request.client.firstName}{' '}
