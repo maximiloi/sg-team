@@ -7,8 +7,6 @@ export default async function Page() {
   const inProgress = await getRequestsByStatus(RequestStatus.IN_PROGRESS);
   const postponed = await getRequestsByStatus(RequestStatus.POSTPONED);
   const confirmed = await getRequestsByStatus(RequestStatus.CONFIRMED);
-  const done = await getRequestsByStatus(RequestStatus.DONE);
-  const cancelled = await getRequestsByStatus(RequestStatus.CANCELLED);
 
   return (
     <>
@@ -24,11 +22,6 @@ export default async function Page() {
       <RequestsByStatusList
         status={RequestStatus.CONFIRMED}
         requests={confirmed}
-      />
-      <RequestsByStatusList status={RequestStatus.DONE} requests={done} />
-      <RequestsByStatusList
-        status={RequestStatus.CANCELLED}
-        requests={cancelled}
       />
     </>
   );
