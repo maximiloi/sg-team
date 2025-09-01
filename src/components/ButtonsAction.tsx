@@ -3,12 +3,13 @@
 import { updateRequestStatus } from '@/app/actions/updateRequestStatus';
 import { RequestStatus } from '@/generated/prisma';
 import {
-  CalendarCheck2,
-  CheckCircle2,
-  Clock,
+  AlarmClock,
+  Briefcase,
   PhoneCall,
   Trash2,
+  XCircle,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from './ui/button';
 
@@ -21,19 +22,24 @@ export default function ButtonsAction({
   requestId: number;
   currentStatus: RequestStatus;
 }) {
-  const [showActions, setShowActions] = useState(
-    currentStatus !== RequestStatus.NEW
-  );
+  const [status, setStatus] = useState<RequestStatus>(currentStatus);
+  const router = useRouter();
 
-  const handleStatusChange = async (status: RequestStatus) => {
+  const handleStatusChange = async (
+    newStatus: RequestStatus,
+    redirect?: boolean
+  ) => {
     try {
-      await updateRequestStatus(requestId, status);
+      await updateRequestStatus(requestId, newStatus);
+      setStatus(newStatus);
 
       if (
-        currentStatus === RequestStatus.NEW &&
-        status === RequestStatus.IN_PROGRESS
+        newStatus === RequestStatus.REJECTION ||
+        newStatus === RequestStatus.CANCELLED
       ) {
-        setShowActions(true);
+        router.push('/board'); // редирект на доску
+      } else if (redirect) {
+        router.refresh();
       }
     } catch (e) {
       console.error('Ошибка при изменении статуса', e);
@@ -44,46 +50,49 @@ export default function ButtonsAction({
     <div className='mt-4 flex flex-col gap-2'>
       <Button
         className='w-full'
-        asChild
-        onClick={() => {
-          handleStatusChange(RequestStatus.IN_PROGRESS);
+        onClick={async () => {
+          try {
+            await handleStatusChange(RequestStatus.CALL_CLIENT, false);
+            await handleStatusChange(RequestStatus.IN_PROGRESS, true);
+            window.location.href = `tel:${phone.replace(/\D/g, '')}`;
+          } catch (e) {
+            console.error('Ошибка при звонке клиенту', e);
+          }
         }}
       >
-        <a href={`tel:${phone.replace(/\D/g, '')}`}>
-          <PhoneCall className='mr-2' /> Позвонить клиенту
-        </a>
+        <PhoneCall className='mr-2' /> Позвонить клиенту
       </Button>
 
-      {showActions && (
+      {status !== RequestStatus.NEW && (
         <>
           <Button
             variant='secondary'
             className='w-full'
-            onClick={() => handleStatusChange(RequestStatus.CONFIRMED)}
+            onClick={() => handleStatusChange(RequestStatus.DONE, true)}
           >
-            <CalendarCheck2 className='mr-2' /> Подтвердить запись
+            <Briefcase className='mr-2' /> Передать в работу
           </Button>
 
           <Button
             variant='secondary'
             className='w-full'
-            onClick={() => handleStatusChange(RequestStatus.POSTPONED)}
+            onClick={() => handleStatusChange(RequestStatus.CALLBACK, true)}
           >
-            <Clock className='mr-2' /> Отложить
+            <AlarmClock className='mr-2' /> Не дозвонились
           </Button>
 
           <Button
             variant='secondary'
             className='w-full'
-            onClick={() => handleStatusChange(RequestStatus.DONE)}
+            onClick={() => handleStatusChange(RequestStatus.REJECTION, true)}
           >
-            <CheckCircle2 className='mr-2' /> Отметить выполненной
+            <XCircle className='mr-2' /> Отказ клиента
           </Button>
 
           <Button
             variant='destructive'
             className='w-full'
-            onClick={() => handleStatusChange(RequestStatus.CANCELLED)}
+            onClick={() => handleStatusChange(RequestStatus.CANCELLED, true)}
           >
             <Trash2 className='mr-2' /> Удалить заявку (спам)
           </Button>
