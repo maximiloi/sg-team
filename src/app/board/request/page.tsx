@@ -5,9 +5,10 @@ import { RequestStatus } from '@/generated/prisma';
 export default async function Page() {
   const newReq = await getRequestsByStatus(RequestStatus.NEW);
   const inProgress = await getRequestsByStatus(RequestStatus.IN_PROGRESS);
-  const postponed = await getRequestsByStatus(RequestStatus.POSTPONED);
-  const confirmed = await getRequestsByStatus(RequestStatus.CONFIRMED);
+  const callbackClient = await getRequestsByStatus(RequestStatus.CALLBACK);
+  const rejection = await getRequestsByStatus(RequestStatus.REJECTION);
   const done = await getRequestsByStatus(RequestStatus.DONE);
+
   const cancelled = await getRequestsByStatus(RequestStatus.CANCELLED);
 
   return (
@@ -18,14 +19,14 @@ export default async function Page() {
         requests={inProgress}
       />
       <RequestsByStatusList
-        status={RequestStatus.POSTPONED}
-        requests={postponed}
-      />
-      <RequestsByStatusList
-        status={RequestStatus.CONFIRMED}
-        requests={confirmed}
+        status={RequestStatus.CALLBACK}
+        requests={callbackClient}
       />
       <RequestsByStatusList status={RequestStatus.DONE} requests={done} />
+      <RequestsByStatusList
+        status={RequestStatus.REJECTION}
+        requests={rejection}
+      />
       <RequestsByStatusList
         status={RequestStatus.CANCELLED}
         requests={cancelled}
