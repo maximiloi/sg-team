@@ -1,69 +1,93 @@
 'use client';
 
-import { logAction } from '@/app/actions/logAction';
-import { Check, Hourglass, PhoneCall, Trash2 } from 'lucide-react';
+import { updateRequestStatus } from '@/app/actions/updateRequestStatus';
+import { RequestStatus } from '@/generated/prisma';
+import {
+  CalendarCheck2,
+  CheckCircle2,
+  Clock,
+  PhoneCall,
+  Trash2,
+} from 'lucide-react';
 import { useState } from 'react';
 import { Button } from './ui/button';
 
 export default function ButtonsAction({
   phone,
   requestId,
-  clientId,
+  currentStatus,
 }: {
   phone: string;
   requestId: number;
-  clientId: string;
+  currentStatus: RequestStatus;
 }) {
-  const [showActions, setShowActions] = useState(false);
+  const [showActions, setShowActions] = useState(
+    currentStatus !== RequestStatus.NEW
+  );
 
-  const handleLog = async (action: string) => {
+  const handleStatusChange = async (status: RequestStatus) => {
     try {
-      await logAction({ action, requestId, clientId });
+      await updateRequestStatus(requestId, status);
+
+      if (
+        currentStatus === RequestStatus.NEW &&
+        status === RequestStatus.IN_PROGRESS
+      ) {
+        setShowActions(true);
+      }
     } catch (e) {
-      console.error(e);
+      console.error('Ошибка при изменении статуса', e);
     }
   };
 
   return (
-    <div className='mt-4 space-y-2'>
+    <div className='mt-4 flex flex-col gap-2'>
       <Button
         className='w-full'
-        onClick={() => {
-          handleLog('Позвонить клиенту');
-          setShowActions(true);
-        }}
         asChild
+        onClick={() => {
+          handleStatusChange(RequestStatus.IN_PROGRESS);
+        }}
       >
-        <a href={`tel:${phone}`}>
-          <PhoneCall /> Позвонить клиенту
+        <a href={`tel:${phone.replace(/\D/g, '')}`}>
+          <PhoneCall className='mr-2' /> Позвонить клиенту
         </a>
       </Button>
 
       {showActions && (
-        <div className='flex flex-col gap-2'>
+        <>
           <Button
             variant='secondary'
             className='w-full'
-            onClick={() => handleLog('Отметить выполненной')}
+            onClick={() => handleStatusChange(RequestStatus.CONFIRMED)}
           >
-            <Check /> Отметить выполненной
+            <CalendarCheck2 className='mr-2' /> Подтвердить запись
           </Button>
+
           <Button
             variant='secondary'
             className='w-full'
-            onClick={() => handleLog('Отложить')}
+            onClick={() => handleStatusChange(RequestStatus.POSTPONED)}
           >
-            <Hourglass /> Отложить
+            <Clock className='mr-2' /> Отложить
           </Button>
+
+          <Button
+            variant='secondary'
+            className='w-full'
+            onClick={() => handleStatusChange(RequestStatus.DONE)}
+          >
+            <CheckCircle2 className='mr-2' /> Отметить выполненной
+          </Button>
+
           <Button
             variant='destructive'
             className='w-full'
-            onClick={() => handleLog('Удалить заявку (спам)')}
+            onClick={() => handleStatusChange(RequestStatus.CANCELLED)}
           >
-            <Trash2 />
-            Удалить заявку (спам)
+            <Trash2 className='mr-2' /> Удалить заявку (спам)
           </Button>
-        </div>
+        </>
       )}
     </div>
   );
