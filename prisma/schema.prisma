@@ -77,8 +77,9 @@ model ActionLog {
 enum RequestStatus {
   NEW // новая
   IN_PROGRESS // оператор обрабатывает
-  POSTPONED // отложена
-  CONFIRMED // подтверждена запись
+  CALL_CLIENT // звонок
   DONE // выполнена
+  CALLBACK // не дозвонились (перезвонить)
+  REJECTION // отказ клиента
   CANCELLED // отменена / спам
 }
