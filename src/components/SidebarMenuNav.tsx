@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, Home, Inbox, Search, Settings } from 'lucide-react';
+import { Briefcase, ClipboardList, Home } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import {
   SidebarGroup,
@@ -13,10 +13,10 @@ import {
 
 const items = [
   { title: 'Главная', url: '/board', icon: Home },
-  { title: 'Заявки', url: '/board/request', icon: Inbox },
-  { title: 'Calendar', url: '/calendar', icon: Calendar },
-  { title: 'Search', url: '/search', icon: Search },
-  { title: 'Settings', url: '/settings', icon: Settings },
+  { title: 'Заявки', url: '/board/request', icon: ClipboardList },
+  { title: 'В работе', url: '/active', icon: Briefcase },
+  // { title: 'Search', url: '/search', icon: Search },
+  // { title: 'Settings', url: '/settings', icon: Settings },
 ];
 
 export default function SidebarMenuNav() {
