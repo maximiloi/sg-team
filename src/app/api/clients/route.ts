@@ -41,7 +41,19 @@ export async function POST(req: Request) {
     for (const id of MANAGER_IDS) {
       await bot.api.sendMessage(
         id,
-        `📩 Новая заявка с сайта!\n\n👤 ${firstName}\n📱 ${phone}\n🆕 Обращение #${request.id}`
+        `📩 Новая заявка с сайта!\n\n👤 ${firstName}\n📱 ${phone}\n🆕 Обращение #${request.id}`,
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: '🔗 Открыть заявку',
+                  url: `${process.env.NEXTAUTH_URL}/board/request/${request.id}`,
+                },
+              ],
+            ],
+          },
+        }
       );
     }
 
