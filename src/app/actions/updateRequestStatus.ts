@@ -2,7 +2,6 @@
 
 import { RequestStatus } from '@/generated/prisma';
 import { prisma } from '@/lib/prisma';
-import { redirect } from 'next/navigation';
 import { auth } from '../auth/authSetup';
 
 export async function updateRequestStatus(
@@ -32,8 +31,6 @@ export async function updateRequestStatus(
       userId: session.user.id,
     },
   });
-
-  redirect(`/board/request/${requestId}`);
 
   return updated;
 }
