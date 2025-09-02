@@ -22,6 +22,8 @@ model User {
   password      String
   emailVerified DateTime?
   image         String?
+  telegramId    String?
+  role          UserRole  @default(TECHNICIAN) // роль пользователя
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -32,13 +34,16 @@ model User {
 
 // Клиент
 model Client {
-  id        String   @id @default(uuid())
-  firstName String
-  lastName  String?
-  phone     String   @unique
-  createdAt DateTime @default(now())
+  id         String   @id @default(uuid())
+  firstName  String
+  lastName   String?
+  phone      String   @unique
+  telegramId String?
+  createdAt  DateTime @default(now())
 
-  requests Request[]
+  requests     Request[]
+  cars         Car[]
+  appointments Appointment[]
 }
 
 // Заявка
@@ -71,6 +76,50 @@ model ActionLog {
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
+}
+
+// Автомобиль
+model Car {
+  id        String   @id @default(uuid())
+  vin       String   @unique
+  plate     String   @unique // госномер
+  make      String // марка
+  model     String // модель
+  createdAt DateTime @default(now())
+
+  client   Client @relation(fields: [clientId], references: [id])
+  clientId String
+
+  appointments Appointment[]
+}
+
+// Запись (Appointment)
+model Appointment {
+  id      String          @id @default(uuid())
+  date    DateTime
+  type    AppointmentType
+  comment String?
+
+  client   Client @relation(fields: [clientId], references: [id])
+  clientId String
+
+  car   Car    @relation(fields: [carId], references: [id])
+  carId String
+
+  createdAt DateTime @default(now())
+}
+
+// Роли пользователей
+enum UserRole {
+  ADMIN // админ
+  TECHNICIAN // техник
+}
+
+// Тип записи
+enum AppointmentType {
+  MAINTENANCE // техобслуживание
+  DIAGNOSTICS // диагностика
+  REPAIR // ремонт
 }
 
 // Статусы заявки на обратный звонок
