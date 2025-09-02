@@ -1,4 +1,4 @@
-import { getRequestById } from '@/app/actions/requests';
+import { getRequestById } from '@/actions/requests';
 import ButtonsAction from '@/components/ButtonsAction';
 import { Card, CardContent } from '@/components/ui/card';
 import { STATUS_LABEL } from '@/constants/statusLabels';

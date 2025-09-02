@@ -2,7 +2,7 @@
 
 import { RequestStatus } from '@/generated/prisma';
 import { prisma } from '@/lib/prisma';
-import { auth } from '../auth/authSetup';
+import { auth } from '../app/auth/authSetup';
 
 export async function updateRequestStatus(
   requestId: number,

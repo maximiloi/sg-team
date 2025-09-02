@@ -1,6 +1,6 @@
 import RequestsByStatusList from '@/components/RequestsByStatusList';
 import { RequestStatus } from '@/generated/prisma';
-import { getRequestsByStatus } from '../actions/requests';
+import { getRequestsByStatus } from '../../actions/requests';
 
 export default async function Page() {
   const newReq = await getRequestsByStatus(RequestStatus.NEW);

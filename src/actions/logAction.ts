@@ -1,7 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { auth } from '../auth/authSetup';
+import { auth } from '../app/auth/authSetup';
 
 export async function logAction({
   action,

@@ -1,6 +1,6 @@
 'use client';
 
-import { updateRequestStatus } from '@/app/actions/updateRequestStatus';
+import { updateRequestStatus } from '@/actions/updateRequestStatus';
 import { RequestStatus } from '@/generated/prisma';
 import {
   AlarmClock,

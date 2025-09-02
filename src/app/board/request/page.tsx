@@ -1,4 +1,4 @@
-import { getRequestsByStatus } from '@/app/actions/requests';
+import { getRequestsByStatus } from '@/actions/requests';
 import RequestsByStatusList from '@/components/RequestsByStatusList';
 import { RequestStatus } from '@/generated/prisma';
 
