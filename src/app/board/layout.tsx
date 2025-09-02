@@ -2,6 +2,7 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { redirect } from 'next/navigation';
 import { auth } from '../auth/authSetup';
 
+import ButtonCreateRecord from '@/components/ButtonCreateRecord';
 import { SidebarBoard } from '@/components/SidebarBoard';
 
 export default async function Layout({
@@ -19,7 +20,14 @@ export default async function Layout({
     <SidebarProvider>
       <SidebarBoard session={session} />
       <main className='w-full p-4'>
-        <SidebarTrigger /> | Super Garage Team
+        <div className='flex justify-between'>
+          <div className=''>
+            <SidebarTrigger /> | Super Garage Team
+          </div>
+          <div className=''>
+            <ButtonCreateRecord />
+          </div>
+        </div>
         {children}
       </main>
     </SidebarProvider>
