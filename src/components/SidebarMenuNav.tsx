@@ -14,7 +14,7 @@ import {
 const items = [
   { title: 'Главная', url: '/board', icon: Home },
   { title: 'Заявки', url: '/board/request', icon: ClipboardList },
-  { title: 'В работе', url: '/active', icon: Briefcase },
+  { title: 'В работе', url: '/board/active', icon: Briefcase },
   // { title: 'Search', url: '/search', icon: Search },
   // { title: 'Settings', url: '/settings', icon: Settings },
 ];
