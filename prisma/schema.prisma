@@ -103,8 +103,8 @@ model Appointment {
   client   Client @relation(fields: [clientId], references: [id])
   clientId String
 
-  car   Car    @relation(fields: [carId], references: [id])
-  carId String
+  car   Car?    @relation(fields: [carId], references: [id])
+  carId String?
 
   createdAt DateTime @default(now())
 }
