@@ -1,5 +1,6 @@
 'use server';
 
+import { formatDateForDB } from '@/lib/dateUtils';
 import { prisma } from '@/lib/prisma';
 
 export async function createAppointment(data: {
@@ -81,9 +82,7 @@ export async function createAppointment(data: {
     }
 
     // Создаем запись (Appointment)
-    const appointmentDate = new Date(
-      `${data.date.split('T')[0]}T${data.time}:00Z`
-    );
+    const appointmentDate = formatDateForDB(data.date, data.time);
     const appointment = await prisma.appointment.create({
       data: {
         date: appointmentDate,
@@ -98,6 +97,58 @@ export async function createAppointment(data: {
   } catch (error) {
     console.error('Error creating appointment:', error);
     return { success: false, error: 'Не удалось создать запись' };
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+export async function getActiveAppointments() {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Начало текущего дня
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    const dayAfterTomorrow = new Date(tomorrow);
+    dayAfterTomorrow.setDate(tomorrow.getDate() + 1);
+
+    const appointments = await prisma.appointment.findMany({
+      where: {
+        date: {
+          gte: today,
+          lt: dayAfterTomorrow,
+        },
+      },
+      include: {
+        client: {
+          select: {
+            phone: true,
+            firstName: true,
+            lastName: true,
+            telegramId: true,
+          },
+        },
+        car: {
+          select: { vin: true, plate: true, make: true, model: true },
+        },
+      },
+      orderBy: [{ date: 'asc' }],
+    });
+
+    // Разделяем записи на сегодня и завтра
+    const todayAppointments = appointments.filter(
+      (appt) => appt.date.toDateString() === today.toDateString()
+    );
+    const tomorrowAppointments = appointments.filter(
+      (appt) => appt.date.toDateString() === tomorrow.toDateString()
+    );
+
+    return {
+      today: todayAppointments,
+      tomorrow: tomorrowAppointments,
+    };
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+    return { today: [], tomorrow: [], error: 'Не удалось загрузить записи' };
   } finally {
     await prisma.$disconnect();
   }

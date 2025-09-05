@@ -22,6 +22,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Label } from '@radix-ui/react-label';
 import { ru } from 'date-fns/locale';
 import { ChevronDownIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
@@ -48,6 +49,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export default function FormAppointment() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const methods = useForm<FormValues>({
@@ -82,6 +84,7 @@ export default function FormAppointment() {
     if (result.success) {
       console.log('🚀 ~ onSubmit ~ appointment created:', result.appointment);
       // Здесь можно добавить уведомление об успехе, например, toast
+      router.push('/board/active');
     } else {
       console.error('🚀 ~ onSubmit ~ error:', result.error);
       // Здесь можно добавить уведомление об ошибке
