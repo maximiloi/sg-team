@@ -22,7 +22,20 @@ export async function checkClientByPhone({ phone }: { phone: string }) {
   try {
     const client = await prisma.client.findUnique({
       where: { phone },
-      select: { firstName: true, lastName: true, telegramId: true },
+      select: {
+        firstName: true,
+        lastName: true,
+        telegramId: true,
+        cars: {
+          select: {
+            id: true,
+            vin: true,
+            make: true,
+            model: true,
+            plate: true,
+          },
+        },
+      },
     });
 
     return client || null;
