@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Rubik } from 'next/font/google';
+import { Toaster } from 'sonner';
 import './globals.css';
 
 const rubik = Rubik({
@@ -90,6 +91,7 @@ export default function RootLayout({
     <html lang='ru'>
       <body className={`${inter.variable} ${rubik.variable} antialiased`}>
         {children}
+        <Toaster richColors position='top-right' />
       </body>
     </html>
   );

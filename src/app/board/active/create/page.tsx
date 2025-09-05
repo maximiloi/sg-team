@@ -26,6 +26,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
+import { toast } from 'sonner';
 import vinDecoder from 'vin-decode';
 import z from 'zod';
 
@@ -82,12 +83,10 @@ export default function FormAppointment() {
   const onSubmit = async (data: FormValues) => {
     const result = await createAppointment(data);
     if (result.success) {
-      console.log('🚀 ~ onSubmit ~ appointment created:', result.appointment);
-      // Здесь можно добавить уведомление об успехе, например, toast
+      toast.success('Запись успешно создана');
       router.push('/board/active');
     } else {
-      console.error('🚀 ~ onSubmit ~ error:', result.error);
-      // Здесь можно добавить уведомление об ошибке
+      toast.error(result.error);
     }
   };
 
