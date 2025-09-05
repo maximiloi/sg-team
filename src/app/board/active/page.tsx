@@ -1,7 +1,7 @@
 import { getActiveAppointments } from '@/actions/appointment';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { formatDateForDisplay } from '@/lib/dateUtils';
+import { formatDateForAppointments } from '@/lib/dateUtils';
 
 export default async function ActiveAppointmentsPage() {
   const { today, tomorrow, error } = await getActiveAppointments();
@@ -25,7 +25,7 @@ export default async function ActiveAppointmentsPage() {
               <Card key={appointment.id}>
                 <CardHeader>
                   <CardTitle>
-                    {formatDateForDisplay(appointment.date)} -{' '}
+                    {formatDateForAppointments(appointment.date)} -{' '}
                     {appointment.type === 'MAINTENANCE'
                       ? 'Техобслуживание'
                       : appointment.type === 'DIAGNOSTICS'
@@ -83,7 +83,7 @@ export default async function ActiveAppointmentsPage() {
               <Card key={appointment.id}>
                 <CardHeader>
                   <CardTitle>
-                    {formatDateForDisplay(appointment.date)} -{' '}
+                    {formatDateForAppointments(appointment.date)} -{' '}
                     {appointment.type === 'MAINTENANCE'
                       ? 'Техобслуживание'
                       : appointment.type === 'DIAGNOSTICS'
