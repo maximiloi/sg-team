@@ -100,6 +100,8 @@ model Appointment {
   type    AppointmentType
   comment String?
 
+  status AppointmentStatus @default(SCHEDULED) // статус записи
+
   client   Client @relation(fields: [clientId], references: [id])
   clientId String
 
@@ -120,6 +122,15 @@ enum AppointmentType {
   MAINTENANCE // техобслуживание
   DIAGNOSTICS // диагностика
   REPAIR // ремонт
+}
+
+// Статусы записи
+enum AppointmentStatus {
+  SCHEDULED // запланирована (создана запись, дата ещё не наступила)
+  CONFIRMED // подтверждена (например, оператор или мастер подтвердил с клиентом)
+  IN_PROGRESS // в работе (машина в работе)
+  DONE // выполнена (работы выполнены)
+  CANCELLED // отменена клиентом или мастером
 }
 
 // Статусы заявки на обратный звонок

@@ -88,6 +88,7 @@ export async function createAppointment(data: {
         date: appointmentDate,
         type: data.type,
         comment: data.comment,
+        status: 'SCHEDULED',
         clientId: client.id,
         carId: car?.id,
       },
