@@ -1,6 +1,6 @@
 'use client';
 
-import { Briefcase, ClipboardList, Home } from 'lucide-react';
+import { Briefcase, CalendarDays, ClipboardList, Home } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import {
   SidebarGroup,
@@ -15,7 +15,7 @@ const items = [
   { title: 'Главная', url: '/board', icon: Home },
   { title: 'Заявки', url: '/board/request', icon: ClipboardList },
   { title: 'В работе', url: '/board/active', icon: Briefcase },
-  // { title: 'Search', url: '/search', icon: Search },
+  { title: 'Календарь', url: '/board/calendar', icon: CalendarDays },
   // { title: 'Settings', url: '/settings', icon: Settings },
 ];
 
