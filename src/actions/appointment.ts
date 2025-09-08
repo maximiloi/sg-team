@@ -1,7 +1,9 @@
 'use server';
 
+import { AppointmentStatus } from '@/generated/prisma';
 import { formatDateForDB } from '@/lib/dateUtils';
 import { prisma } from '@/lib/prisma';
+import { endOfDay, startOfDay } from 'date-fns';
 
 export async function createAppointment(data: {
   phone: string;
@@ -152,5 +154,71 @@ export async function getActiveAppointments() {
     return { today: [], tomorrow: [], error: 'Не удалось загрузить записи' };
   } finally {
     await prisma.$disconnect();
+  }
+}
+
+export async function getAppointmentsForCalendar(
+  startDate: Date,
+  endDate: Date
+) {
+  try {
+    const appointments = await prisma.appointment.findMany({
+      where: {
+        date: {
+          gte: startDate,
+          lte: endDate,
+        },
+        status: {
+          notIn: [AppointmentStatus.DONE, AppointmentStatus.CANCELLED],
+        },
+      },
+      select: {
+        id: true,
+        date: true,
+        status: true,
+      },
+    });
+
+    return { appointments, error: null };
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+    return { appointments: [], error: 'Failed to fetch appointments' };
+  }
+}
+
+export async function getAppointmentsByDate(selectedDate: Date) {
+  try {
+    const appointments = await prisma.appointment.findMany({
+      where: {
+        OR: [
+          // Записи, начинающиеся на выбранную дату
+          {
+            date: {
+              gte: startOfDay(selectedDate),
+              lte: endOfDay(selectedDate),
+            },
+            status: {
+              notIn: [AppointmentStatus.DONE, AppointmentStatus.CANCELLED],
+            },
+          },
+          // Записи IN_PROGRESS с датой начала <= выбранной дате
+          {
+            status: AppointmentStatus.IN_PROGRESS,
+            date: {
+              lte: endOfDay(selectedDate),
+            },
+          },
+        ],
+      },
+      include: {
+        client: true,
+        car: true,
+      },
+    });
+
+    return { appointments, error: null };
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+    return { appointments: [], error: 'Failed to fetch appointments' };
   }
 }
