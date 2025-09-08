@@ -18,6 +18,11 @@ export function formatDateForDB(date: string, time: string): string {
 }
 
 // Форматирование даты из базы для отображения
-export function formatDateForAppointments(date: Date): string {
+export function formatDateForCardAppointments(date: Date): string {
   return format(date, 'HH:mm', { locale: ru });
+}
+
+// Форматирование даты из базы для отображения
+export function formatDateForTitleAppointments(date: Date): string {
+  return format(date, 'dd/MM/yyyy', { locale: ru });
 }
