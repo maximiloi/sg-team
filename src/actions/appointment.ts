@@ -222,3 +222,19 @@ export async function getAppointmentsByDate(selectedDate: Date) {
     return { appointments: [], error: 'Failed to fetch appointments' };
   }
 }
+
+export async function getAppointmentById(id: string) {
+  try {
+    const appointment = await prisma.appointment.findUnique({
+      where: { id },
+      include: {
+        client: true,
+        car: true,
+      },
+    });
+    return { appointment, error: null };
+  } catch (error) {
+    console.error('Error fetching appointment:', error);
+    return { appointment: null, error: 'Failed to fetch appointment' };
+  }
+}
