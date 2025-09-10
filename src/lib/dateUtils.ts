@@ -17,12 +17,17 @@ export function formatDateForDB(date: string, time: string): string {
   return dateTime.toISOString();
 }
 
-// Форматирование даты из базы для отображения
+// Форматирование даты из базы для отображения времени в карточке
 export function formatDateForCardAppointments(date: Date): string {
   return format(date, 'HH:mm', { locale: ru });
 }
 
-// Форматирование даты из базы для отображения
+// Форматирование даты из базы для отображения в заголовке
 export function formatDateForTitleAppointments(date: Date): string {
   return format(date, 'dd/MM/yyyy', { locale: ru });
+}
+
+// Форматирование даты из базы для отображения в заголовке
+export function formatDateForCreateAppointment(date: Date): string {
+  return format(date, 'dd/MM HH:mm', { locale: ru });
 }
