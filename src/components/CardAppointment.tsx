@@ -6,6 +6,7 @@ import {
 } from '@/constants/statusLabels';
 import { Appointment } from '@/generated/prisma';
 import { formatDateForCardAppointments } from '@/lib/dateUtils';
+import Link from 'next/link';
 
 // Расширяем тип Appointment, добавляя связанные данные client и car
 type AppointmentWithRelations = Appointment & {
@@ -28,26 +29,28 @@ export function CardAppointment({
 }) {
   return (
     <Card>
-      <CardHeader>
-        <div className='flex items-center justify-between'>
-          <CardTitle>
-            {formatDateForCardAppointments(appointment.date)} -{' '}
-            {appointment.type === 'MAINTENANCE'
-              ? 'Техобслуживание'
-              : appointment.type === 'DIAGNOSTICS'
-              ? 'Диагностика'
-              : 'Ремонт'}
-          </CardTitle>
-          <Badge
-            style={{
-              backgroundColor: APPOINTMENT_STATUS_COLORS[appointment.status],
-              color: '#fff',
-            }}
-          >
-            {APPOINTMENT_STATUS_LABEL[appointment.status]}
-          </Badge>
-        </div>
-      </CardHeader>
+      <Link href={`/board/appointment/${appointment.id}`}>
+        <CardHeader>
+          <div className='flex items-center justify-between'>
+            <CardTitle>
+              {formatDateForCardAppointments(appointment.date)} -{' '}
+              {appointment.type === 'MAINTENANCE'
+                ? 'Техобслуживание'
+                : appointment.type === 'DIAGNOSTICS'
+                ? 'Диагностика'
+                : 'Ремонт'}
+            </CardTitle>
+            <Badge
+              style={{
+                backgroundColor: APPOINTMENT_STATUS_COLORS[appointment.status],
+                color: '#fff',
+              }}
+            >
+              {APPOINTMENT_STATUS_LABEL[appointment.status]}
+            </Badge>
+          </div>
+        </CardHeader>
+      </Link>
       <CardContent>
         <p>
           <strong>Клиент:</strong> {appointment.client.firstName}{' '}
