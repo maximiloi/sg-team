@@ -1,8 +1,21 @@
 import { prisma } from '@/lib/prisma';
 import { Bot } from 'grammy';
+import { Agent } from 'http';
 import { NextResponse } from 'next/server';
 
-const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN!);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fetchWithIPv4 = (url: string, options: any) => {
+  return fetch(url, {
+    ...options,
+    agent: new Agent({ family: 4 }),
+  });
+};
+
+const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN!, {
+  client: {
+    fetch: fetchWithIPv4,
+  },
+});
 const MANAGER_IDS = process.env.TELEGRAM_MANAGER_IDS!.split(',');
 
 export async function POST(req: Request) {
