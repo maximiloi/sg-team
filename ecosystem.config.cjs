@@ -7,7 +7,7 @@ module.exports = {
       cwd: '/var/www/sgt',
       env: {
         NODE_ENV: 'production',
-        PORT: 3002,
+        PORT: 3000,
       },
     },
     {
