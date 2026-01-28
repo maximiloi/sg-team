@@ -77,7 +77,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          command_timeout: 30m
+          # command_timeout: 30m
           script: |
             cd /var/www/sgt
             cat > .env <<EOL
@@ -90,7 +90,7 @@ jobs:
             npm install sharp --omit=dev --registry=https://registry.npmjs.org/
             npm ci --omit=dev --prefer-offline --no-audit --progress=false --loglevel=error
             npx prisma migrate deploy
-            # npx prisma migrate deploy --skip-generate
+          # npx prisma migrate deploy --skip-generate
 
       # 10. Перезапускаем pm2
       - name: Restart PM2
