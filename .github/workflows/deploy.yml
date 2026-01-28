@@ -86,7 +86,7 @@ jobs:
             TELEGRAM_MANAGER_IDS=${{ secrets.TELEGRAM_MANAGER_IDS }}
             EOL
             npm config set registry https://registry.npmmirror.com
-            npm install sharp --omit=dev --registry=https://registry.npmjs.org/ --force
+            npm install sharp --omit=dev --registry=https://registry.npmjs.org/
             npm ci --omit=dev --prefer-offline --no-audit --progress=false --loglevel=error
             npx prisma migrate deploy
             # npx prisma migrate deploy --skip-generate
