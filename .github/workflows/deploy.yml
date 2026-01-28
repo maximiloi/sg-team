@@ -85,9 +85,6 @@ jobs:
             TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
             TELEGRAM_MANAGER_IDS=${{ secrets.TELEGRAM_MANAGER_IDS }}
             EOL
-            rm -rf node_modules
-            npm config set registry https://registry.npmmirror.com
-            npm install sharp --omit=dev --registry=https://registry.npmjs.org/
             npm ci --omit=dev
             npx prisma migrate deploy
 
