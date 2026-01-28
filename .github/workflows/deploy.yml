@@ -88,9 +88,8 @@ jobs:
             rm -rf node_modules
             npm config set registry https://registry.npmmirror.com
             npm install sharp --omit=dev --registry=https://registry.npmjs.org/
-            npm ci --omit=dev --prefer-offline --no-audit --progress=false --loglevel=error
+            npm ci --omit=dev
             npx prisma migrate deploy
-          # npx prisma migrate deploy --skip-generate
 
       # 10. Перезапускаем pm2
       - name: Restart PM2
