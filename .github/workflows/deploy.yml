@@ -56,7 +56,7 @@ jobs:
         run: |
           scp deploy.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
 
-      # 9. Деплой (одним SSH, без telegram-action)
+      # 9. Деплой
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.2.0
         env:
@@ -67,20 +67,20 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          script_timeout: 15m
+          command_timeout: 20m
           script: |
             set -e
             cd /var/www/sgt || mkdir -p /var/www/sgt && cd /var/www/sgt
 
-            # Backup
-            [ -d "backup" ] || mkdir backup
+            echo "📦 Backup старого билда..."
+            mkdir -p backup
             mv .next backup/.next.$(date +%Y%m%d_%H%M) 2>/dev/null || true
 
-            # Разархивация
+            echo "📦 Разархивируем новый билд..."
             tar -xzf /tmp/deploy.tar.gz -C .
             rm -f /tmp/deploy.tar.gz
 
-            # .env
+            echo "🔧 Обновляем .env..."
             cat > .env << EOF
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -88,17 +88,20 @@ jobs:
             NODE_ENV=production
             EOF
 
-            # Зависимости (умно)
-            if [ ! -d "node_modules/.prisma/client" ] || [ ! -f "node_modules/.prisma/client/index.js" ]; then
-              npm ci --omit=dev --prefer-offline --no-audit --no-fund || npm install --production
+            echo "⚙️ Проверяем Prisma..."
+            if [ ! -d "node_modules/.prisma/client" ]; then
+              echo "🔄 Устанавливаем зависимости (первый запуск)..."
+              npm install --production --no-audit --no-fund
+            else
+              echo "✅ node_modules актуален, пропускаем npm install"
             fi
 
-            # Prisma
+            echo "🗄️ Prisma generate & migrate..."
             npx prisma generate --schema=prisma/schema.prisma
             npx prisma db push --schema=prisma/schema.prisma || npx prisma migrate deploy
 
-            # PM2
+            echo "🔄 PM2 reload..."
             pm2 reload ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs --env production
             pm2 save
 
-            echo "✅ Deploy завершён: $(date)"
+            echo "✅ Deploy завершён за $(date +%s) сек"
