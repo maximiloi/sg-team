@@ -1,102 +1,73 @@
-name: Build GitHub and Deploy to VDS
-
+name: Build & Deploy to VDS
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-      TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
 
     steps:
-      # 1. Клонируем репо
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # 2. Ставим Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # 3. Кэш npm
-      - name: Cache node modules
-        uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
 
-      # 4. Устанавливаем зависимости
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
 
-      # 5. Сборка
-      - name: Build app
-        run: npm run build
+      - run: npm run build
 
-      # 6. Архивация файлов для деплоя
-      - name: Archive production files
+      - name: Prepare deploy folder
         run: |
-          mkdir deploy
-          cp -r .next deploy/
-          cp -r public deploy/
-          cp -r prisma deploy/
-          cp -r bot deploy/
-          cp package.json deploy/
-          cp package-lock.json deploy/
+          mkdir -p deploy
+          cp -r .next      deploy/
+          cp -r public     deploy/
+          cp -r prisma     deploy/
+          cp -r bot        deploy/
+          cp package*.json deploy/
           cp ecosystem.config.cjs deploy/
 
-      # 7. Добавляем сервер в known_hosts
-      - name: Add server to known_hosts
+      - name: Add host to known_hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -p 22 -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      # 8. Загружаем билд на сервер
-      - name: Upload build to server
+      - name: Upload to server
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.SERVER_HOST }}
+          host:     ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          source: 'deploy/*'
-          target: '/var/www/sgt'
-          strip_components: 1
+          key:      ${{ secrets.SERVER_SSH_KEY }}
+          source:   "deploy/"
+          target:   "/var/www/sgt"
+          overwrite: true
 
-      # 9. Создаём .env и ставим зависимости на сервере
-      - name: Setup environment and install deps
-        uses: appleboy/ssh-action@v1.2.0
+      - name: Deploy & restart
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DB_URL:       ${{ secrets.DATABASE_URL }}
+          BOT_TOKEN:    ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          MANAGERS:     ${{ secrets.TELEGRAM_MANAGER_IDS }}
         with:
-          command_timeout: 20m
-          script: |
-            cd /var/www/sgt || exit 1
-            # Быстрое обновление .env
-            cat > .env <<EOL
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
-            TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
-            TELEGRAM_MANAGER_IDS=${{ secrets.TELEGRAM_MANAGER_IDS }}
-            EOL
-            # Умная установка (только если нужно)
-            if [ ! -d "node_modules/.prisma/client" ]; then
-              npm ci --omit=dev --prefer-offline --no-audit || npm install --production
-            fi
-            npx prisma generate
-            npx prisma migrate deploy
-
-      # 10. Перезапускаем pm2
-      - name: Restart PM2
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SERVER_HOST }}
+          host:     ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          key:      ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /var/www/sgt
-            pm2 startOrReload ecosystem.config.cjs
+            cat > .env << 'EOF'
+            DATABASE_URL=$DB_URL
+            TELEGRAM_BOT_TOKEN=$BOT_TOKEN
+            TELEGRAM_MANAGER_IDS=$MANAGERS
+            EOF
+
+            npm ci --omit=dev --prefer-offline --no-audit || npm install --production
+            npx prisma generate
+            npx prisma migrate deploy --schema=prisma/schema.prisma
+
+            pm2 reload ecosystem.config.cjs --update-env
