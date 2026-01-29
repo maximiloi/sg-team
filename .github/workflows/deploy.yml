@@ -35,9 +35,12 @@ jobs:
       - name: Prepare deploy
         run: |
           mkdir -p deploy
-          rsync -av --exclude='*.git' .next/ deploy/ || true
-          cp -r public prisma bot package*.json ecosystem.config.cjs deploy/ || true
-          cp next.config.js deploy/ || true
+          cp -r .next deploy/
+          mkdir -p deploy/public
+          cp -r public/* deploy/public/ 2>/dev/null || true
+          cp -r prisma deploy/
+          cp package*.json ecosystem.config.cjs deploy/
+          ls -la deploy/.next/
           tar -czf deploy.tar.gz -C deploy .
 
       # 6. SSH агент
