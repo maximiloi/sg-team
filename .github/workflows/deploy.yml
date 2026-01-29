@@ -1,73 +1,118 @@
-name: Build & Deploy to VDS
+name: Next.js Deploy to VDS
+
 on:
   push:
     branches: [main]
+  workflow_dispatch:  # Ручной запуск
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+    # 1. Checkout
+    - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
+    # 2. Node.js + Cache
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
 
-      - uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+    # 3. Установка зависимостей (быстро с кэшем)
+    - run: npm ci --frozen-lockfile
 
-      - run: npm ci
+    # 4. Build (с env для API routes)
+    - name: Build
+      run: npm run build
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
+        NEXT_TELEMETRY_DISABLED: 1
 
-      - run: npm run build
+    # 5. Prepare deploy (только нужные файлы)
+    - name: Prepare deploy
+      run: |
+        mkdir -p deploy
+        rsync -av --exclude='*.git' .next/ deploy/
+        rsync -av public/ deploy/ || true
+        rsync -av prisma/ deploy/
+        rsync -av bot/ deploy/ || true
+        cp package*.json ecosystem.config.cjs deploy/
+        cp next.config.js deploy/ || true
+        cp .env.example deploy/.env.example || true
+        tar -czf deploy.tar.gz -C deploy .
 
-      - name: Prepare deploy folder
-        run: |
-          mkdir -p deploy
-          cp -r .next      deploy/
-          cp -r public     deploy/
-          cp -r prisma     deploy/
-          cp -r bot        deploy/
-          cp package*.json deploy/
-          cp ecosystem.config.cjs deploy/
+    # 6. SSH setup
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
 
-      - name: Add host to known_hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+    - name: Add known_hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Upload to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host:     ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key:      ${{ secrets.SERVER_SSH_KEY }}
-          source:   "deploy/"
-          target:   "/var/www/sgt"
-          overwrite: true
+    # 7. Upload archive (быстрее scp)
+    - name: Upload deploy archive
+      run: scp deploy.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
 
-      - name: Deploy & restart
-        uses: appleboy/ssh-action@v1.0.3
-        env:
-          DB_URL:       ${{ secrets.DATABASE_URL }}
-          BOT_TOKEN:    ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          MANAGERS:     ${{ secrets.TELEGRAM_MANAGER_IDS }}
-        with:
-          host:     ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key:      ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            cd /var/www/sgt
-            cat > .env << 'EOF'
-            DATABASE_URL=$DB_URL
-            TELEGRAM_BOT_TOKEN=$BOT_TOKEN
-            TELEGRAM_MANAGER_IDS=$MANAGERS
-            EOF
-
+    # 8. Deploy на сервере (одним SSH)
+    - name: Deploy & Restart
+      uses: appleboy/ssh-action@v1.2.0
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        script_timeout: 10m
+        script: |
+          cd /var/www/sgt
+          
+          # Backup старого билда
+          [ -d "backup" ] || mkdir backup
+          mv .next backup/.next.$(date +%Y%m%d_%H%M) 2>/dev/null || true
+          
+          # Разархивируем новый
+          tar -xzf /tmp/deploy.tar.gz
+          rm /tmp/deploy.tar.gz
+          
+          # Env файл
+          cat > .env << EOF
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_MANAGER_IDS=${{ secrets.TELEGRAM_MANAGER_IDS }}
+          NODE_ENV=production
+          EOF
+          
+          # Установка (умно, без полной переустановки)
+          if [ ! -d "node_modules/.prisma/client" ]; then
             npm ci --omit=dev --prefer-offline --no-audit || npm install --production
-            npx prisma generate
-            npx prisma migrate deploy --schema=prisma/schema.prisma
+          fi
+          
+          # Prisma
+          npx prisma generate
+          npx prisma db push  # Быстрее migrate для dev/prod
+          
+          # PM2 restart
+          pm2 reload ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs --env production
+          pm2 save
+          
+          echo "✅ Deploy completed!"
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
 
-            pm2 reload ecosystem.config.cjs --update-env
+    # 9. Уведомление (опционально)
+    - name: Notify Telegram
+      if: always()
+      uses: appleboy/telegram-action@v0.1.5
+      with:
+        to: ${{ secrets.TELEGRAM_CHAT_ID }}
+        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        message: |
+          🚀 ${{ github.repository }} deploy ${{ job.status }}
+          Commit: ${{ github.sha }}
+          ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
