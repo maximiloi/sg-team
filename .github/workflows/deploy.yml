@@ -3,116 +3,102 @@ name: Next.js Deploy to VDS
 on:
   push:
     branches: [main]
-  workflow_dispatch:  # Ручной запуск
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Checkout
-    - uses: actions/checkout@v4
+      # 1. Checkout
+      - uses: actions/checkout@v4
 
-    # 2. Node.js + Cache
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
+      # 2. Node.js + кэш (автоматический)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-    # 3. Установка зависимостей (быстро с кэшем)
-    - run: npm ci --frozen-lockfile
+      # 3. Зависимости
+      - run: npm ci --frozen-lockfile
 
-    # 4. Build (с env для API routes)
-    - name: Build
-      run: npm run build
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
-        NEXT_TELEMETRY_DISABLED: 1
+      # 4. Build (фикс для /api/clients)
+      - name: Build
+        run: npm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
+          NEXT_TELEMETRY_DISABLED: 1
 
-    # 5. Prepare deploy (только нужные файлы)
-    - name: Prepare deploy
-      run: |
-        mkdir -p deploy
-        rsync -av --exclude='*.git' .next/ deploy/
-        rsync -av public/ deploy/ || true
-        rsync -av prisma/ deploy/
-        rsync -av bot/ deploy/ || true
-        cp package*.json ecosystem.config.cjs deploy/
-        cp next.config.js deploy/ || true
-        cp .env.example deploy/.env.example || true
-        tar -czf deploy.tar.gz -C deploy .
+      # 5. Подготовка деплоя (быстро через tar)
+      - name: Prepare deploy
+        run: |
+          mkdir -p deploy
+          rsync -av --exclude='*.git' .next/ deploy/ || true
+          cp -r public prisma bot package*.json ecosystem.config.cjs deploy/ || true
+          cp next.config.js deploy/ || true
+          tar -czf deploy.tar.gz -C deploy .
 
-    # 6. SSH setup
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+      # 6. SSH агент
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
 
-    - name: Add known_hosts
-      run: |
-        mkdir -p ~/.ssh
-        ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+      # 7. Known hosts
+      - name: Setup known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-    # 7. Upload archive (быстрее scp)
-    - name: Upload deploy archive
-      run: scp deploy.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
+      # 8. Загрузка архива
+      - name: Upload deploy archive
+        run: |
+          scp deploy.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
 
-    # 8. Deploy на сервере (одним SSH)
-    - name: Deploy & Restart
-      uses: appleboy/ssh-action@v1.2.0
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SERVER_SSH_KEY }}
-        script_timeout: 10m
-        script: |
-          cd /var/www/sgt
-          
-          # Backup старого билда
-          [ -d "backup" ] || mkdir backup
-          mv .next backup/.next.$(date +%Y%m%d_%H%M) 2>/dev/null || true
-          
-          # Разархивируем новый
-          tar -xzf /tmp/deploy.tar.gz
-          rm /tmp/deploy.tar.gz
-          
-          # Env файл
-          cat > .env << EOF
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
-          TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_MANAGER_IDS=${{ secrets.TELEGRAM_MANAGER_IDS }}
-          NODE_ENV=production
-          EOF
-          
-          # Установка (умно, без полной переустановки)
-          if [ ! -d "node_modules/.prisma/client" ]; then
-            npm ci --omit=dev --prefer-offline --no-audit || npm install --production
-          fi
-          
-          # Prisma
-          npx prisma generate
-          npx prisma db push  # Быстрее migrate для dev/prod
-          
-          # PM2 restart
-          pm2 reload ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs --env production
-          pm2 save
-          
-          echo "✅ Deploy completed!"
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
+      # 9. Деплой (одним SSH, без telegram-action)
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script_timeout: 15m
+          script: |
+            set -e
+            cd /var/www/sgt || mkdir -p /var/www/sgt && cd /var/www/sgt
 
-    # 9. Уведомление (опционально)
-    - name: Notify Telegram
-      if: always()
-      uses: appleboy/telegram-action@v0.1.5
-      with:
-        to: ${{ secrets.TELEGRAM_CHAT_ID }}
-        token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        message: |
-          🚀 ${{ github.repository }} deploy ${{ job.status }}
-          Commit: ${{ github.sha }}
-          ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            # Backup
+            [ -d "backup" ] || mkdir backup
+            mv .next backup/.next.$(date +%Y%m%d_%H%M) 2>/dev/null || true
+
+            # Разархивация
+            tar -xzf /tmp/deploy.tar.gz -C .
+            rm -f /tmp/deploy.tar.gz
+
+            # .env
+            cat > .env << EOF
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
+            TELEGRAM_MANAGER_IDS=${{ secrets.TELEGRAM_MANAGER_IDS }}
+            NODE_ENV=production
+            EOF
+
+            # Зависимости (умно)
+            if [ ! -d "node_modules/.prisma/client" ] || [ ! -f "node_modules/.prisma/client/index.js" ]; then
+              npm ci --omit=dev --prefer-offline --no-audit --no-fund || npm install --production
+            fi
+
+            # Prisma
+            npx prisma generate --schema=prisma/schema.prisma
+            npx prisma db push --schema=prisma/schema.prisma || npx prisma migrate deploy
+
+            # PM2
+            pm2 reload ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs --env production
+            pm2 save
+
+            echo "✅ Deploy завершён: $(date)"
