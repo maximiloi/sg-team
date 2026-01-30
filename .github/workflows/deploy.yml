@@ -99,8 +99,11 @@ jobs:
               echo "✅ node_modules актуален, пропускаем npm install"
             fi
 
-            echo "🗄️ Только Prisma generate (без миграций)..."
+            echo "🗄️ Только Prisma generate..."
             npx prisma generate --schema=prisma/schema.prisma
+
+            echo "🗄️ ПРИМЕНЯЕМ МИГРАЦИИ БД..."
+            npx prisma migrate deploy
 
             echo "🔄 PM2 reload..."
             pm2 reload ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs --env production
