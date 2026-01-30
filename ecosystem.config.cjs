@@ -6,8 +6,8 @@ module.exports = {
       args: 'start',
       cwd: '/var/www/sgt',
       env: {
-        NODE_ENV: 'production',
         PORT: 3002,
+        HOST: '127.0.0.1',
       },
     },
     {
