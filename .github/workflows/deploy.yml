@@ -77,6 +77,7 @@ jobs:
             cd /var/www/sgt || mkdir -p /var/www/sgt && cd /var/www/sgt
 
             echo "📦 Backup старого билда..."
+            rm -rf backup
             mkdir -p backup
             mv .next backup/.next.$(date +%Y%m%d_%H%M) 2>/dev/null || true
 
@@ -99,10 +100,6 @@ jobs:
             else
               echo "✅ node_modules актуален, пропускаем npm install"
             fi
-
-            echo "🗑️ Оставляем 3 последних бэкапа:"
-            ls -t backup/.next.* 2>/dev/null | head -3
-            ls -t backup/.next.* 2>/dev/null | tail -n +4 | xargs -r rm -rf
 
             echo "📦 До: $(du -sh .)"
 
