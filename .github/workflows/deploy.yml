@@ -100,11 +100,9 @@ jobs:
               echo "✅ node_modules актуален, пропускаем npm install"
             fi
 
-            # echo "🧹 ОЧИСТКА МУСОРА..."
-            # find . -maxdepth 1 \( -name "build*" -o -name "cache*" -o -name "trace*" -o -name "*-manifest.json" -o -name "diagnostics*" -o -name "turbopack*" \) -exec rm -rf {} + 2>/dev/null || true
-
-            # Очистка старых бэкапов (оставить 3 последних)
-            #ls -t backup/.next.* 2>/dev/null | tail -n +4 | xargs -r rm -rf
+            echo "🗑️ Оставляем 3 последних бэкапа:"
+            ls -t backup/.next.* 2>/dev/null | head -3
+            ls -t backup/.next.* 2>/dev/null | tail -n +4 | xargs -r rm -rf
 
             echo "📦 До: $(du -sh .)"
 
