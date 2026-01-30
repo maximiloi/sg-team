@@ -100,11 +100,11 @@ jobs:
               echo "✅ node_modules актуален, пропускаем npm install"
             fi
 
-            echo "🧹 ОЧИСТКА МУСОРА..."
-            find . -maxdepth 1 \( -name "build*" -o -name "cache*" -o -name "trace*" -o -name "*-manifest.json" -o -name "diagnostics*" -o -name "turbopack*" \) -exec rm -rf {} + 2>/dev/null || true
+            # echo "🧹 ОЧИСТКА МУСОРА..."
+            # find . -maxdepth 1 \( -name "build*" -o -name "cache*" -o -name "trace*" -o -name "*-manifest.json" -o -name "diagnostics*" -o -name "turbopack*" \) -exec rm -rf {} + 2>/dev/null || true
 
             # Очистка старых бэкапов (оставить 3 последних)
-            ls -t backup/.next.* 2>/dev/null | tail -n +4 | xargs -r rm -rf
+            #ls -t backup/.next.* 2>/dev/null | tail -n +4 | xargs -r rm -rf
 
             echo "📦 До: $(du -sh .)"
 
@@ -118,6 +118,6 @@ jobs:
             pm2 reload ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs --env production
             pm2 save
 
-            echo "📊 Аудит места:" && du -sh .[^.]* * 2>/dev/null | sort -hr | head -5
+            echo "📊 Аудит места:" && du -sh .[^.]* * 2>/dev/null | sort -hr | head -10
 
             echo "✅ Deploy завершён за $(date +%s) сек"
