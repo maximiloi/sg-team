@@ -8,6 +8,8 @@ module.exports = {
       env: {
         PORT: 3002,
         HOST: '127.0.0.1',
+        TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
+        TELEGRAM_MANAGER_IDS: process.env.TELEGRAM_MANAGER_IDS,
       },
     },
     {
