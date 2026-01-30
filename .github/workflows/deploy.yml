@@ -99,6 +99,17 @@ jobs:
               echo "✅ node_modules актуален, пропускаем npm install"
             fi
 
+            echo "🧹 ОЧИСТКА МУСОРА..."
+            rm -rf build/ cache/ diagnostics/ trace* turbopack/ static/
+            rm -rf app-path-routes-manifest.json export-marker.json \
+                    fallback-build-manifest.json images-manifest.json \
+                    prerender-manifest.json build-manifest.json
+
+            # Очистка старых бэкапов (оставить 3 последних)
+            ls -t backup/.next.* 2>/dev/null | tail -n +4 | xargs -r rm -rf
+
+            echo "📦 До: $(du -sh .)"
+
             echo "🗄️ Только Prisma generate..."
             npx prisma generate --schema=prisma/schema.prisma
 
@@ -108,5 +119,7 @@ jobs:
             echo "🔄 PM2 reload..."
             pm2 reload ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs --env production
             pm2 save
+
+            echo "📊 Аудит места:" && du -sh .[^.]* * 2>/dev/null | sort -hr | head -5
 
             echo "✅ Deploy завершён за $(date +%s) сек"
