@@ -1,8 +1,7 @@
+import { bot } from '@/lib/bot';
 import { prisma } from '@/lib/prisma';
-import { Bot } from 'grammy';
 import { NextResponse } from 'next/server';
 
-const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN!);
 const MANAGER_IDS = process.env.TELEGRAM_MANAGER_IDS!.split(',');
 
 export async function POST(req: Request) {
@@ -13,7 +12,7 @@ export async function POST(req: Request) {
     if (!firstName || !phone) {
       return NextResponse.json(
         { error: 'Имя и телефон обязательны' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -41,19 +40,19 @@ export async function POST(req: Request) {
     for (const id of MANAGER_IDS) {
       await bot.api.sendMessage(
         id,
-        `📩 Новая заявка с сайта!\n\n👤 ${firstName}\n📱 ${phone}\n🆕 Обращение #${request.id}`
+        `📩 Новая заявка с сайта!\n\n👤 ${firstName}\n📱 ${phone}\n🆕 Обращение #${request.id}`,
       );
     }
 
     return NextResponse.json(
       { success: true, client, request },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
       { error: 'Ошибка при обработке заявки' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

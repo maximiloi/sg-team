@@ -1,99 +1,118 @@
-name: Build GitHub and Deploy to VDS
+name: Next.js Deploy to VDS
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-      TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
 
     steps:
-      # 1. Клонируем репо
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      # 1. Checkout
+      - uses: actions/checkout@v4
 
-      # 2. Ставим Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # 2. Node.js + кэш (автоматический)
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
+          cache: 'npm'
 
-      # 3. Кэш npm
-      - name: Cache node modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      # 3. Зависимости
+      - run: npm ci --frozen-lockfile
 
-      # 4. Устанавливаем зависимости
-      - name: Install dependencies
-        run: npm ci
-
-      # 5. Сборка
-      - name: Build app
+      # 4. Build (фикс для /api/clients)
+      - name: Build
         run: npm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
+          NEXT_TELEMETRY_DISABLED: 1
 
-      # 6. Архивация файлов для деплоя
-      - name: Archive production files
+      # 5. Подготовка деплоя (быстро через tar)
+      - name: Prepare deploy
         run: |
-          mkdir deploy
+          mkdir -p deploy
           cp -r .next deploy/
-          cp -r public deploy/
+          mkdir -p deploy/public
+          cp -r public/* deploy/public/ 2>/dev/null || true
           cp -r prisma deploy/
-          cp -r bot deploy/
-          cp package.json deploy/
-          cp package-lock.json deploy/
-          cp ecosystem.config.cjs deploy/
+          cp -r src deploy/
+          cp package*.json ecosystem.config.cjs deploy/
+          ls -la deploy/.next/
+          tar -czf deploy.tar.gz -C deploy .
 
-      # 7. Добавляем сервер в known_hosts
-      - name: Add server to known_hosts
+      # 6. SSH агент
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+
+      # 7. Known hosts
+      - name: Setup known_hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -p 22 -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      # 8. Загружаем билд на сервер
-      - name: Upload build to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          source: 'deploy/*'
-          target: '/var/www/sgt'
-          strip_components: 1
+      # 8. Загрузка архива
+      - name: Upload deploy archive
+        run: |
+          scp deploy.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
 
-      # 9. Создаём .env и ставим зависимости на сервере
-      - name: Setup environment and install deps
+      # 9. Деплой
+      - name: Deploy to server
         uses: appleboy/ssh-action@v1.2.0
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
+          command_timeout: 20m
           script: |
-            cd /var/www/sgt
-            cat > .env <<EOL
+            set -e
+            cd /var/www/sgt || mkdir -p /var/www/sgt && cd /var/www/sgt
+
+            echo "📦 Backup старого билда..."
+            rm -rf backup
+            mkdir -p backup
+            mv .next backup/.next.$(date +%Y%m%d_%H%M) 2>/dev/null || true
+
+            echo "📦 Разархивируем новый билд..."
+            tar -xzf /tmp/deploy.tar.gz -C .
+            rm -f /tmp/deploy.tar.gz
+
+            echo "🔧 Обновляем .env..."
+            cat > .env << EOF
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
             TELEGRAM_MANAGER_IDS=${{ secrets.TELEGRAM_MANAGER_IDS }}
-            EOL
-            npm ci --omit=dev
+            NODE_ENV=production
+            EOF
+
+            echo "⚙️ Проверяем Prisma..."
+            if [ ! -d "node_modules/.prisma/client" ]; then
+              echo "🔄 Устанавливаем зависимости (первый запуск)..."
+              npm install --production --no-audit --no-fund
+            else
+              echo "✅ node_modules актуален, пропускаем npm install"
+            fi
+
+            echo "📦 До: $(du -sh .)"
+
+            echo "🗄️ Только Prisma generate..."
+            npx prisma generate --schema=prisma/schema.prisma
+
+            echo "🗄️ ПРИМЕНЯЕМ МИГРАЦИИ БД..."
             npx prisma migrate deploy
 
-      # 10. Перезапускаем pm2
-      - name: Restart PM2
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            cd /var/www/sgt
-            pm2 startOrReload ecosystem.config.cjs
+            echo "🔄 PM2 reload..."
+            pm2 reload ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs --env production
+            pm2 save
+
+            echo "📊 Аудит места:" && du -sh .[^.]* * 2>/dev/null | sort -hr | head -10
+
+            echo "✅ Deploy завершён за $(date +%s) сек"
