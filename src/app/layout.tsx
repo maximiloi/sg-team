@@ -15,6 +15,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://sgt-service.ru/'),
   title: 'Автосервис - Super Garage Team | TO за час',
   description:
     'Профессиональный автосервис Super Garage Team. Ремонт и обслуживание автомобилей любых марок в короткие сроки с гарантией качества. ТО за час',
