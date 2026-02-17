@@ -1,34 +1,38 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
-import { Button } from "@/components/ui/button";
-import { Modal } from "@/components/ui/modal";
-import FormTelegram from "../FormTelegram";
+import { Button } from '@/components/ui/button';
+import { Modal } from '@/components/ui/modal';
+import FormTelegram from '../FormTelegram';
 
 export default function ModalDiagnostics() {
   const [open, setOpen] = useState(false);
+  const [showThanks, setShowThanks] = useState(false);
 
   return (
     <>
-      <Button className="mx-4 w-full" onClick={() => setOpen(true)}>
-        Записаться на диагностику
+      <Button className='w-full' size='lg' onClick={() => setOpen(true)}>
+        Записаться на бесплатную диагностику
       </Button>
-
       <Modal
         open={open}
         onOpenChange={setOpen}
-        title="Оставьте Ваши данные"
-        description="Измените данные и нажмите Сохранить"
-        size="sm"
-        onConfirm={() => {
-          // здесь твоя логика сохранения
-          console.log("Данные сохранены");
-          setOpen(false);
-        }}
-        confirmText="Отправить заявку"
+        title={showThanks ? '' : 'Оставьте ваши данные'}
+        description={showThanks ? '' : 'Мы свяжемся с вами в ближайшее время'}
+        cancelText={showThanks ? '' : 'Отмена'}
+        footer={showThanks ? null : undefined}
+        size='sm'
       >
-        <FormTelegram />
+        <FormTelegram
+          onSuccess={() => {
+            setShowThanks(true);
+            setTimeout(() => {
+              setShowThanks(false);
+              setOpen(false);
+            }, 1500);
+          }}
+        />
       </Modal>
     </>
   );
