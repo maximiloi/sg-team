@@ -14,41 +14,42 @@ import InputPhoneNumber from '@/components/ui/InputPhoneNumber';
 const formSchema = z.object({
   firstName: z
     .string()
-    .regex(/^[А-Яа-яA-Za-z]+$/, { message: 'Можно вводить только буквы 😊' })
-    .min(2, { message: 'Имя должно содержать хотя бы 2 буквы 😊' }),
-  phone: z
-    .string()
-    .min(18, { message: 'Укажите номер в формате +7 (999) 123-45-67' }),
+    .regex(/^[А-Яа-яA-Za-z]+$/, { message: 'Только буквы' })
+    .min(2, { message: 'Минимум 2 буквы' })
+    .max(15, { message: 'Очень много букв' }),
+  phone: z.string().min(18, { message: 'Укажите номер полностью' }),
 });
 
-type FormValues = {
-  firstName: string;
-  phone: string;
-};
+type FormValues = z.infer<typeof formSchema>;
 
-export default function FormTelegram() {
-  const [submitted, setSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+interface FormTelegramProps {
+  onSuccess?: () => void;
+}
 
+export default function FormTelegram({ onSuccess }: FormTelegramProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: { firstName: '', phone: '' },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true);
+  const [submitted, setSubmitted] = useState(false);
+  const isSubmitting = form.formState.isSubmitting;
+
+  async function onSubmit(values: FormValues) {
     try {
       const res = await fetch('/api/clients', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       });
-      if (res.ok) setSubmitted(true);
-      else console.error(await res.json());
+
+      if (!res.ok) throw new Error('Ошибка сервера');
+
+      setSubmitted(true);
+      onSuccess?.();
     } catch (err) {
       console.error(err);
-    } finally {
-      setIsSubmitting(false);
+      // здесь можно добавить toast с ошибкой
     }
   }
 
@@ -56,7 +57,7 @@ export default function FormTelegram() {
     return (
       <div className='p-6 text-center space-y-2 animate-fade-in'>
         <p className='text-lg font-medium'>✅ Спасибо!</p>
-        <p className='text-gray-600'>Мы свяжемся с вами в ближайшее время ✨</p>
+        <p className='text-gray-600'>Скоро свяжемся ✨</p>
       </div>
     );
   }
@@ -71,9 +72,10 @@ export default function FormTelegram() {
           {isSubmitting ? 'Отправка...' : '📩 Отправить заявку'}
         </Button>
       </form>
+
       <CardFooter>
-        <p className='text-sm text-gray-500 text-center'>
-          Мы используем номер только для связи. Никакого спама ✨
+        <p className='text-sm text-gray-500 text-center mt-2'>
+          Номер только для связи. Без спама ✨
         </p>
       </CardFooter>
     </Form>
