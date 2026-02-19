@@ -15,7 +15,7 @@ export default function AdvantageList() {
   ];
 
   return (
-    <section className='grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 my-6 px-4 md:px-0'>
+    <section className='container grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 my-8 px-4'>
       {advantages.map((item, i) => (
         <Card
           key={i}
