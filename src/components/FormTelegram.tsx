@@ -24,9 +24,13 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface FormTelegramProps {
   onSuccess?: () => void;
+  buttonText?: string;
 }
 
-export default function FormTelegram({ onSuccess }: FormTelegramProps) {
+export default function FormTelegram({
+  onSuccess,
+  buttonText = '📩 Отправить заявку',
+}: FormTelegramProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: { firstName: '', phone: '' },
@@ -69,12 +73,12 @@ export default function FormTelegram({ onSuccess }: FormTelegramProps) {
         <InputPhoneNumber<FormValues> control={form.control} name='phone' />
 
         <Button className='w-full' type='submit' disabled={isSubmitting}>
-          {isSubmitting ? 'Отправка...' : '📩 Отправить заявку'}
+          {isSubmitting ? 'Отправка...' : buttonText}
         </Button>
       </form>
 
-      <CardFooter>
-        <p className='text-sm text-gray-500 text-center mt-2'>
+      <CardFooter className='justify-center'>
+        <p className='text-sm text-gray-500 mt-2 block'>
           Номер только для связи. Без спама ✨
         </p>
       </CardFooter>
