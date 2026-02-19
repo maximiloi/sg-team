@@ -1,7 +1,9 @@
 import AdvantageList from '@/components/AdvantageList';
+import Calls from '@/components/Calls';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import PricesBlock from '@/components/PricesBlock';
+import ReviewsCarousel from '@/components/ReviewsCarousel';
 import WhatWeFix from '@/components/WhatWeFix';
 
 export default function Home() {
@@ -13,6 +15,8 @@ export default function Home() {
         <AdvantageList />
         <WhatWeFix />
         <PricesBlock />
+        <ReviewsCarousel />
+        <Calls />
       </main>
     </>
   );
