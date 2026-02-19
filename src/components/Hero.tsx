@@ -5,7 +5,7 @@ import ModalDiagnostics from './modal/ModalDiagnostics';
 
 export default function Hero() {
   return (
-    <section className='mx-4 my-8'>
+    <section className='container my-8 px-4'>
       <h1 className='my-8 scroll-m-20 text-center text-3xl font-extrabold tracking-tight text-balance'>
         Ремонт и ТО автомобилей от&nbsp;30&nbsp;минут с&nbsp;гарантией
         до&nbsp;12 месяцев в Санкт-Петербурге
