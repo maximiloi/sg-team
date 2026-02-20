@@ -30,7 +30,7 @@ export default function ModalDiagnostics() {
             setTimeout(() => {
               setShowThanks(false);
               setOpen(false);
-            }, 1500);
+            }, 2500);
           }}
         />
       </Modal>

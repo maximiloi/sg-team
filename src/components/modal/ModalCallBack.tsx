@@ -12,7 +12,7 @@ export default function ModalCallBack() {
 
   return (
     <>
-      <Button className='w-full' size='lg' onClick={() => setOpen(true)}>
+      <Button className='w-full mt-8' size='lg' onClick={() => setOpen(true)}>
         Заказать обратный звонок
       </Button>
       <Modal
@@ -33,7 +33,7 @@ export default function ModalCallBack() {
             setTimeout(() => {
               setShowThanks(false);
               setOpen(false);
-            }, 1500);
+            }, 2500);
           }}
         />
       </Modal>
