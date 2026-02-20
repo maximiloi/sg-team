@@ -11,7 +11,7 @@ export default function Calls() {
         Не рискуйте — приезжайте сегодня! Бесплатно поднимем на подъёмник и
         скажем, что сломалось.
       </p>
-      <div className='flex items-center gap-6 text-sm font-medium'>
+      <div className='flex items-center flex-col md:flex-row gap-6 text-sm font-medium'>
         <span className='flex items-center gap-2'>
           <a
             href='tel:+79819447077'
@@ -23,10 +23,9 @@ export default function Calls() {
         <span className='flex items-center gap-2'>
           <MapPin size={16} /> Санкт-Петербург, Витебский проспект, 12
         </span>
-        <span className='flex items-center gap-2'>
-          <ModalCallBack />
-        </span>
       </div>
+
+      <ModalCallBack />
     </section>
   );
 }
