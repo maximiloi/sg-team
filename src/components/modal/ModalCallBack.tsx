@@ -27,7 +27,7 @@ export default function ModalCallBack() {
         size='sm'
       >
         <FormTelegram
-          buttonText={showThanks ? '' : ' Перезвоните мне 🚀'}
+          buttonText={showThanks ? '' : 'Перезвоните мне 🚀'}
           onSuccess={() => {
             setShowThanks(true);
             setTimeout(() => {
