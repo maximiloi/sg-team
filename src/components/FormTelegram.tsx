@@ -7,9 +7,17 @@ import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { CardFooter } from '@/components/ui/card';
-import { Form } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import InputFirstName from '@/components/ui/InputFirstName';
 import InputPhoneNumber from '@/components/ui/InputPhoneNumber';
+import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
   firstName: z
@@ -18,6 +26,7 @@ const formSchema = z.object({
     .min(2, { message: 'Минимум 2 буквы' })
     .max(15, { message: 'Очень много букв' }),
   phone: z.string().min(18, { message: 'Укажите номер полностью' }),
+  question: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -25,15 +34,17 @@ type FormValues = z.infer<typeof formSchema>;
 interface FormTelegramProps {
   onSuccess?: () => void;
   buttonText?: string;
+  showQuestion?: boolean;
 }
 
 export default function FormTelegram({
   onSuccess,
   buttonText = '📩 Отправить заявку',
+  showQuestion = false,
 }: FormTelegramProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { firstName: '', phone: '' },
+    defaultValues: { firstName: '', phone: '', question: '' },
   });
 
   const [submitted, setSubmitted] = useState(false);
@@ -53,7 +64,6 @@ export default function FormTelegram({
       onSuccess?.();
     } catch (err) {
       console.error(err);
-      // здесь можно добавить toast с ошибкой
     }
   }
 
@@ -71,6 +81,26 @@ export default function FormTelegram({
       <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
         <InputFirstName<FormValues> control={form.control} name='firstName' />
         <InputPhoneNumber<FormValues> control={form.control} name='phone' />
+
+        {showQuestion && (
+          <FormField
+            control={form.control}
+            name='question'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Ваш вопрос / что беспокоит?</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder='Опишите проблему кратко...'
+                    className='min-h-[80px] resize-none'
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <Button className='w-full' type='submit' disabled={isSubmitting}>
           {isSubmitting ? 'Отправка...' : buttonText}
