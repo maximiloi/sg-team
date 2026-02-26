@@ -40,4 +40,5 @@ model Request {
   createdAt DateTime @default(now())
   client    Client   @relation(fields: [clientId], references: [id])
   clientId  String
+  question  String?
 }
