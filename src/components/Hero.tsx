@@ -18,18 +18,18 @@ export default function Hero() {
             priority
           />
         </div>
-        <div className="flex-1 text-center md:text-left">
-          <h1 className="my-4 scroll-m-20 text-2xl font-extrabold tracking-tight text-balance sm:text-3xl">
-            Ремонт и ТО автомобилей от&nbsp;30&nbsp;минут с&nbsp;гарантией до&nbsp;12 месяцев в
-            Санкт-Петербурге
+        <div className="text-center md:max-w-full md:min-w-0 lg:text-left">
+          <h1 className="my-4 scroll-m-20 text-2xl font-extrabold tracking-tight text-balance sm:text-3xl lg:text-4xl">
+            Ремонт и ТО автомобилей от&nbsp;30&nbsp;минут с&nbsp;гарантией до&nbsp;12&nbsp;месяцев
+            в&nbsp;Санкт-Петербурге
           </h1>
-          <h3 className="my-4 scroll-m-20 text-lg font-semibold tracking-tight first:mt-0 sm:text-2xl">
-            Бесплатная диагностика •&nbsp;Гарантия • 15 лет опыта
+          <h3 className="my-4 scroll-m-20 text-lg font-semibold tracking-tight first:mt-0 sm:text-2xl lg:text-3xl">
+            Бесплатная диагностика •&nbsp;Гарантия •&nbsp;15 лет опыта
           </h3>
           <h4 className="my-4 text-gray-600 md:hidden">Витебский проспект 12</h4>
-          <div className="flex flex-col justify-center gap-3 sm:flex-row md:justify-start">
+          <div className="flex flex-col justify-center gap-3 lg:flex-row">
             <ModalDiagnostics />
-            <Button asChild size="lg" variant="outline">
+            <Button asChild size="lg" variant="outline" className="w-full lg:flex-1">
               <Link href="tel:+79819447077" className="whitespace-nowrap">
                 Позвонить: +7 (981) 944-70-77
               </Link>

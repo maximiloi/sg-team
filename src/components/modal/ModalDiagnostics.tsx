@@ -12,7 +12,7 @@ export default function ModalDiagnostics() {
 
   return (
     <>
-      <Button size="lg" onClick={() => setOpen(true)}>
+      <Button size="lg" onClick={() => setOpen(true)} className="w-full lg:flex-1">
         Записаться на бесплатную диагностику
       </Button>
       <Modal
