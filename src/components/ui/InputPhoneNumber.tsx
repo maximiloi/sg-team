@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Control, Controller, FieldValues, Path } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
 
@@ -37,14 +31,11 @@ export default function InputPhoneNumber<T extends FieldValues>({
               render={({ field }) => (
                 <IMaskInput
                   {...field}
-                  mask='+7 (000) 000-00-00'
+                  mask="+7 (000) 000-00-00"
                   placeholder={placeholder}
-                  className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm 
-                    ring-offset-background placeholder:text-muted-foreground 
-                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring 
-                    focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
-                  inputMode='tel'
-                  type='tel'
+                  className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                  inputMode="tel"
+                  type="tel"
                 />
               )}
             />

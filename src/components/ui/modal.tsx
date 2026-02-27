@@ -63,9 +63,7 @@ export function Modal({
         {(title || description) && (
           <DialogHeader>
             {title && <DialogTitle>{title}</DialogTitle>}
-            {description && (
-              <DialogDescription>{description}</DialogDescription>
-            )}
+            {description && <DialogDescription>{description}</DialogDescription>}
           </DialogHeader>
         )}
 
@@ -76,7 +74,7 @@ export function Modal({
         ) : onConfirm || cancelText ? (
           <DialogFooter>
             {cancelText && (
-              <Button variant='outline' onClick={() => onOpenChange(false)}>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
                 {cancelText}
               </Button>
             )}
