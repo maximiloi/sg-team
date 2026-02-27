@@ -15,23 +15,12 @@ export default function AdvantageList() {
   ];
 
   return (
-    <section className='container grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 my-8 px-4'>
+    <section className="container mx-auto my-8 grid max-w-5xl grid-cols-2 gap-4 px-4 md:grid-cols-3 md:gap-6">
       {advantages.map((item, i) => (
-        <Card
-          key={i}
-          className='border shadow-sm hover:shadow-md transition-shadow'
-        >
-          <CardContent className='flex flex-col items-center p-4 sm:p-6 text-center'>
-            <Image
-              src={item.icon}
-              alt=''
-              width={64}
-              height={64}
-              className='mb-3 sm:mb-4'
-            />
-            <p className='text-sm sm:text-base font-medium leading-tight'>
-              {item.text}
-            </p>
+        <Card key={i} className="border shadow-sm transition-shadow hover:shadow-md">
+          <CardContent className="flex flex-col items-center p-4 text-center sm:p-6">
+            <Image src={item.icon} alt="" width={64} height={64} className="mb-3 sm:mb-4" />
+            <p className="text-sm leading-tight font-medium sm:text-base">{item.text}</p>
           </CardContent>
         </Card>
       ))}

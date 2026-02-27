@@ -12,19 +12,17 @@ export default function ModalCallBack() {
 
   return (
     <>
-      <Button className='w-full mt-8' size='lg' onClick={() => setOpen(true)}>
+      <Button className="mt-8 w-full" size="lg" onClick={() => setOpen(true)}>
         Заказать обратный звонок
       </Button>
       <Modal
         open={open}
         onOpenChange={setOpen}
         title={showThanks ? '' : 'Оставьте ваши данные, мы перезвоним Вам'}
-        description={
-          showThanks ? '' : 'Мы перезвоним Вам в ближайшее рабочее время'
-        }
+        description={showThanks ? '' : 'Мы перезвоним Вам в ближайшее рабочее время'}
         cancelText={showThanks ? '' : 'Отмена'}
         footer={showThanks ? null : undefined}
-        size='sm'
+        size="sm"
       >
         <FormTelegram
           buttonText={showThanks ? '' : 'Перезвоните мне 🚀'}

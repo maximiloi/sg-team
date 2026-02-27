@@ -1,5 +1,6 @@
 import AdvantageList from '@/components/AdvantageList';
 import Calls from '@/components/Calls';
+import ContactMap from '@/components/ContactMap';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import HowWeWork from '@/components/HowWeWork';
@@ -11,7 +12,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main className='md:flex md:items-center md:justify-center md:flex-col'>
+      <main>
         <Hero />
         <AdvantageList />
         <WhatWeFix />
@@ -19,6 +20,7 @@ export default function Home() {
         <ReviewsCarousel />
         <Calls />
         <HowWeWork />
+        <ContactMap />
       </main>
     </>
   );

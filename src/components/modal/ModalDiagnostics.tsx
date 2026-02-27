@@ -12,7 +12,7 @@ export default function ModalDiagnostics() {
 
   return (
     <>
-      <Button className='w-full' size='lg' onClick={() => setOpen(true)}>
+      <Button size="lg" onClick={() => setOpen(true)}>
         Записаться на бесплатную диагностику
       </Button>
       <Modal
@@ -22,7 +22,7 @@ export default function ModalDiagnostics() {
         description={showThanks ? '' : 'Мы свяжемся с вами в ближайшее время'}
         cancelText={showThanks ? '' : 'Отмена'}
         footer={showThanks ? null : undefined}
-        size='sm'
+        size="sm"
       >
         <FormTelegram
           onSuccess={() => {

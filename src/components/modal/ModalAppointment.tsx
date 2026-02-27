@@ -12,19 +12,17 @@ export default function ModalAppointment() {
 
   return (
     <>
-      <Button className='w-full' size='sm' onClick={() => setOpen(true)}>
+      <Button className="w-full" size="sm" onClick={() => setOpen(true)}>
         Записаться
       </Button>
       <Modal
         open={open}
         onOpenChange={setOpen}
         title={showThanks ? '' : 'Оставьте ваши данные, мы перезвоним Вам'}
-        description={
-          showThanks ? '' : 'Мы перезвоним Вам в ближайшее рабочее время'
-        }
+        description={showThanks ? '' : 'Мы перезвоним Вам в ближайшее рабочее время'}
         cancelText={showThanks ? '' : 'Отмена'}
         footer={showThanks ? null : undefined}
-        size='sm'
+        size="sm"
       >
         <FormTelegram
           buttonText={showThanks ? '' : 'Записаться 📅'}

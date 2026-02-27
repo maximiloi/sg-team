@@ -17,7 +17,6 @@ const reviews = [
     rating: 5,
     source: 'Яндекс',
     date: '15 февраля 2026',
-    avatar: '/placeholder.svg',
   },
   {
     name: 'Марина К.',
@@ -39,33 +38,28 @@ const reviews = [
 
 export default function ReviewsCarousel() {
   return (
-    <section className='container my-8 px-4'>
-      <h2 className='text-2xl sm:text-3xl font-bold text-center mb-8'>
-        Что говорят клиенты
-      </h2>
+    <section className="container mx-auto my-8 px-4">
+      <h2 className="mb-8 text-center text-2xl font-bold sm:text-3xl">Что говорят клиенты</h2>
 
-      <Carousel
-        opts={{ align: 'start', loop: true }}
-        className='w-full max-w-5xl mx-auto'
-      >
+      <Carousel opts={{ align: 'start', loop: true }} className="mx-auto w-full max-w-5xl">
         <CarouselContent>
           {reviews.map((review, i) => (
-            <CarouselItem key={i} className='md:basis-1/2 lg:basis-1/3 pl-4'>
-              <div className='bg-card border rounded-xl p-6 h-full flex flex-col'>
-                <div className='flex items-center gap-3 mb-4'>
+            <CarouselItem key={i} className="pl-4 md:basis-1/2 lg:basis-1/3">
+              <div className="bg-card flex h-full flex-col rounded-xl border p-6">
+                <div className="mb-4 flex items-center gap-3">
                   <Avatar>
                     <AvatarImage src={review.avatar} alt={review.name} />
                     <AvatarFallback>{review.name[0]}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className='font-medium'>{review.name}</p>
-                    <p className='text-xs text-muted-foreground'>
+                    <p className="font-medium">{review.name}</p>
+                    <p className="text-muted-foreground text-xs">
                       {review.source} • {review.date}
                     </p>
                   </div>
                 </div>
 
-                <div className='flex mb-3'>
+                <div className="mb-3 flex">
                   {Array(5)
                     .fill(0)
                     .map((_, idx) => (
@@ -73,24 +67,20 @@ export default function ReviewsCarousel() {
                         key={idx}
                         size={16}
                         className={
-                          idx < review.rating
-                            ? 'fill-yellow-400 text-yellow-400'
-                            : 'text-muted'
+                          idx < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-muted'
                         }
                       />
                     ))}
                 </div>
 
-                <p className='text-sm leading-relaxed flex-1'>
-                  «{review.text}»
-                </p>
+                <p className="flex-1 text-sm leading-relaxed">«{review.text}»</p>
               </div>
             </CarouselItem>
           ))}
         </CarouselContent>
 
-        <CarouselPrevious className='-left-2 sm:-left-12' />
-        <CarouselNext className='-right-2 sm:-right-12' />
+        <CarouselPrevious className="hidden sm:-left-12 sm:block" />
+        <CarouselNext className="hidden sm:-right-12 sm:block" />
       </Carousel>
     </section>
   );

@@ -17,7 +17,7 @@ export default async function Page() {
           await signOut();
         }}
       >
-        <Button type='submit'>Sign Out</Button>
+        <Button type="submit">Sign Out</Button>
       </form>
 
       <div>Board</div>

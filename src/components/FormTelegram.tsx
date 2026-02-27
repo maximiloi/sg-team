@@ -69,30 +69,30 @@ export default function FormTelegram({
 
   if (submitted) {
     return (
-      <div className='p-6 text-center space-y-2 animate-fade-in'>
-        <p className='text-lg font-medium'>✅ Спасибо!</p>
-        <p className='text-gray-600'>Скоро свяжемся ✨</p>
+      <div className="animate-fade-in space-y-2 p-6 text-center">
+        <p className="text-lg font-medium">✅ Спасибо!</p>
+        <p className="text-gray-600">Скоро свяжемся ✨</p>
       </div>
     );
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-        <InputFirstName<FormValues> control={form.control} name='firstName' />
-        <InputPhoneNumber<FormValues> control={form.control} name='phone' />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <InputFirstName<FormValues> control={form.control} name="firstName" />
+        <InputPhoneNumber<FormValues> control={form.control} name="phone" />
 
         {showQuestion && (
           <FormField
             control={form.control}
-            name='question'
+            name="question"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Ваш вопрос / что беспокоит?</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder='Опишите проблему кратко...'
-                    className='min-h-[80px] resize-none'
+                    placeholder="Опишите проблему кратко..."
+                    className="min-h-[80px] resize-none"
                     {...field}
                   />
                 </FormControl>
@@ -102,15 +102,13 @@ export default function FormTelegram({
           />
         )}
 
-        <Button className='w-full' type='submit' disabled={isSubmitting}>
+        <Button className="w-full" type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Отправка...' : buttonText}
         </Button>
       </form>
 
-      <CardFooter className='justify-center'>
-        <p className='text-sm text-gray-500 mt-2 block'>
-          Номер только для связи. Без спама ✨
-        </p>
+      <CardFooter className="justify-center">
+        <p className="mt-2 block text-sm text-gray-500">Номер только для связи. Без спама ✨</p>
       </CardFooter>
     </Form>
   );

@@ -16,44 +16,40 @@ export default function PricesBlock() {
   ];
 
   return (
-    <section className='my-10 px-4 max-w-5xl mx-auto'>
-      <h2 className='text-2xl sm:text-3xl font-bold text-center mb-8'>
-        Цены от
-      </h2>
+    <section className="mx-auto my-10 max-w-5xl px-4">
+      <h2 className="mb-8 text-center text-2xl font-bold sm:text-3xl">Цены от</h2>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* Тормоза */}
-        <div className='bg-gray-50 rounded-xl p-6 shadow-sm'>
-          <h3 className='text-xl font-semibold mb-4 text-center md:text-left'>
-            Тормоза
-          </h3>
-          <ul className='space-y-3'>
+        <div className="rounded-xl bg-gray-50 p-6 shadow-sm">
+          <h3 className="mb-4 text-center text-xl font-semibold md:text-left">Тормоза</h3>
+          <ul className="space-y-3">
             {brakes.map((item, i) => (
-              <li key={i} className='flex justify-between text-base sm:text-lg'>
+              <li key={i} className="flex justify-between text-base sm:text-lg">
                 <span>{item.name}</span>
-                <span className='font-medium ml-2'>{item.price}</span>
+                <span className="ml-2 font-medium">{item.price}</span>
               </li>
             ))}
           </ul>
         </div>
 
         {/* Глушители / выхлоп */}
-        <div className='bg-gray-50 rounded-xl p-6 shadow-sm'>
-          <h3 className='text-xl font-semibold mb-4 text-center md:text-left'>
+        <div className="rounded-xl bg-gray-50 p-6 shadow-sm">
+          <h3 className="mb-4 text-center text-xl font-semibold md:text-left">
             Глушители / выхлоп
           </h3>
-          <ul className='space-y-3'>
+          <ul className="space-y-3">
             {exhaust.map((item, i) => (
-              <li key={i} className='flex justify-between text-base sm:text-lg'>
+              <li key={i} className="flex justify-between text-base sm:text-lg">
                 <span>{item.name}</span>
-                <span className='font-medium'>{item.price}</span>
+                <span className="font-medium">{item.price}</span>
               </li>
             ))}
           </ul>
         </div>
       </div>
 
-      <p className='text-center mt-8 text-gray-600 text-base sm:text-lg'>
+      <p className="mt-8 text-center text-base text-gray-600 sm:text-lg">
         Точная цена после бесплатного осмотра
       </p>
     </section>

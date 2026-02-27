@@ -2,13 +2,7 @@
 
 import { signupAction } from '@/app/actions/signup';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
@@ -42,10 +36,7 @@ const schema = z
 
 type FormData = z.infer<typeof schema>;
 
-export default function FormRegistration({
-  className,
-  ...props
-}: React.ComponentProps<'div'>) {
+export default function FormRegistration({ className, ...props }: React.ComponentProps<'div'>) {
   const {
     register,
     handleSubmit,
@@ -73,75 +64,65 @@ export default function FormRegistration({
       <Card>
         <CardHeader>
           <CardTitle>Регистрация</CardTitle>
-          <CardDescription>
-            Создайте новый аккаунт, указав имя, email и пароль
-          </CardDescription>
+          <CardDescription>Создайте новый аккаунт, указав имя, email и пароль</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className='flex flex-col gap-6'>
+            <div className="flex flex-col gap-6">
               {/* Имя */}
-              <div className='grid gap-2'>
-                <Label htmlFor='name'>Имя</Label>
-                <Input id='name' type='text' {...register('name')} />
-                {errors.name && (
-                  <p className='text-sm text-red-500'>{errors.name.message}</p>
-                )}
+              <div className="grid gap-2">
+                <Label htmlFor="name">Имя</Label>
+                <Input id="name" type="text" {...register('name')} />
+                {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
               </div>
 
               {/* Email */}
-              <div className='grid gap-2'>
-                <Label htmlFor='email'>Email</Label>
-                <Input id='email' type='email' {...register('email')} />
-                {errors.email && (
-                  <p className='text-sm text-red-500'>{errors.email.message}</p>
-                )}
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" {...register('email')} />
+                {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
               </div>
 
               {/* Пароль */}
-              <div className='grid gap-2'>
-                <Label htmlFor='password'>Пароль</Label>
-                <div className='relative'>
+              <div className="grid gap-2">
+                <Label htmlFor="password">Пароль</Label>
+                <div className="relative">
                   <Input
-                    id='password'
+                    id="password"
                     type={showPassword ? 'text' : 'password'}
                     {...register('password')}
                   />
                   <button
-                    type='button'
+                    type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className='absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500'
+                    className="absolute top-1/2 right-2 -translate-y-1/2 text-sm text-gray-500"
                   >
                     {showPassword ? '🙈' : '👁️'}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className='text-sm text-red-500'>
-                    {errors.password.message}
-                  </p>
+                  <p className="text-sm text-red-500">{errors.password.message}</p>
                 )}
-                <p className='text-xs text-gray-500'>
-                  Пароль должен быть не короче 6 символов, содержать хотя бы
-                  одну цифру и заглавную букву.
+                <p className="text-xs text-gray-500">
+                  Пароль должен быть не короче 6 символов, содержать хотя бы одну цифру и заглавную
+                  букву.
                 </p>
               </div>
 
               {/* Подтверждение пароля */}
-              <div className='grid gap-2'>
-                <Label htmlFor='confirmPassword'>Повтор пароля</Label>
+              <div className="grid gap-2">
+                <Label htmlFor="confirmPassword">Повтор пароля</Label>
                 <Input
-                  id='confirmPassword'
+                  id="confirmPassword"
                   type={showPassword ? 'text' : 'password'}
                   {...register('confirmPassword')}
                 />
                 {errors.confirmPassword && (
-                  <p className='text-sm text-red-500'>
-                    {errors.confirmPassword.message}
-                  </p>
+                  <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
                 )}
               </div>
 
-              <Button type='submit' className='w-full' disabled={isSubmitting}>
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? 'Регистрация...' : 'Зарегистрироваться'}
               </Button>
             </div>
