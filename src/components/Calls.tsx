@@ -7,7 +7,7 @@ export default function Calls() {
       <h2 className="mb-8 text-center text-2xl font-bold sm:text-3xl">
         Проблема с авто или просто ТО?
       </h2>
-      <p className="text-base sm:text-lg">
+      <p className="mb-8 text-base sm:text-lg">
         Не рискуйте — приезжайте сегодня! Бесплатно поднимем на подъёмник и скажем, что сломалось.
       </p>
       <div className="flex flex-col flex-wrap items-center justify-center gap-4 text-sm font-medium sm:text-base md:flex-row">
