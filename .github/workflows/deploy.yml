@@ -46,7 +46,7 @@ jobs:
           cp -r public/* deploy/public/ 2>/dev/null || true
           cp -r prisma deploy/
           cp -r src deploy/
-          cp package*.json ecosystem.config.cjs prisma.config.ts deploy/
+          cp package*.json ecosystem.config.cjs deploy/
           ls -la deploy/.next/
           tar -czf deploy.tar.gz -C deploy .
 
