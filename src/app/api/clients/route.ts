@@ -7,7 +7,7 @@ const MANAGER_IDS = process.env.TELEGRAM_MANAGER_IDS!.split(',');
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { firstName, phone } = body;
+    const { firstName, phone, question = '' } = body;
 
     if (!firstName || !phone) {
       return NextResponse.json(
@@ -34,13 +34,22 @@ export async function POST(req: Request) {
     const request = await prisma.request.create({
       data: {
         clientId: client.id,
+        question: question.trim() || null,
       },
     });
 
     for (const id of MANAGER_IDS) {
+      const questionText = question?.trim()
+        ? `\n❓ Вопрос: ${question.trim()}`
+        : '';
+
       await bot.api.sendMessage(
         id,
-        `📩 Новая заявка с сайта!\n\n👤 ${firstName}\n📱 ${phone}\n🆕 Обращение #${request.id}`,
+        `📩 Новая заявка с сайта!\n\n` +
+          `👤 ${firstName}\n` +
+          `📱 ${phone}\n` +
+          `${questionText}\n\n` +
+          `🆕 Обращение #${request.id}`,
       );
     }
 

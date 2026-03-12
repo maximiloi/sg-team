@@ -68,8 +68,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Автосервис - Super Garage Team',
-    description:
-      'Профессиональный ремонт и обслуживание автомобилей. Super Garage Team.',
+    description: 'Профессиональный ремонт и обслуживание автомобилей. Super Garage Team.',
     images: ['/logo.png'],
   },
   category: 'Автосервис',
@@ -87,10 +86,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='ru'>
-      <body className={`${inter.variable} ${rubik.variable} antialiased`}>
-        {children}
-      </body>
+    <html lang="ru">
+      <body className={`${inter.variable} ${rubik.variable} antialiased`}>{children}</body>
     </html>
   );
 }
