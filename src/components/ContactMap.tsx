@@ -14,12 +14,11 @@ export default function ContactMap() {
         <div className="space-y-6">
           <div className="aspect-video w-full overflow-hidden rounded-xl border shadow-sm">
             <iframe
-              src="https://yandex.ru/map-widget/v1/?um=constructor%3AВАШ_КОНСТРУКТОР_ID&lang=ru_RU&scroll=true"
+              src="https://yandex.ru/map-widget/v1/?um=constructor%3Ac6e097086bed4e32c638795959f302e29d43e526a729da752f7a2de0524c1f3b&amp;source=constructor"
               width="100%"
               height="100%"
-              frameBorder="0"
               className="h-full w-full"
-            />
+            ></iframe>
           </div>
 
           <div className="flex flex-col gap-4 text-center md:text-left">
