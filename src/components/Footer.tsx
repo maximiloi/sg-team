@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { Send } from 'lucide-react';
+
 import {
   Dialog,
   DialogContent,
@@ -23,7 +25,7 @@ export default function Footer() {
               © 2025 - {currentYear} Super Garage Team. Все права защищены.
             </p>
           </div>
-          <div>
+          <div className="flex flex-col items-center gap-4 md:flex-row">
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <button className="text-sm transition-opacity hover:opacity-80 md:text-base">
@@ -77,6 +79,15 @@ export default function Footer() {
                 </div>
               </DialogContent>
             </Dialog>
+            <a
+              href="https://t.me/SuperGarageTeam_bot"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-sm transition-opacity hover:opacity-80 md:text-base"
+            >
+              <Send className="h-4 w-4" />
+              Telegram бот
+            </a>
           </div>
         </div>
       </div>
