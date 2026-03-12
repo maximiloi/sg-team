@@ -9,7 +9,7 @@
     "build_turbo": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "prisma": "prisma studio",
+    "prisma": "dotenv -e .env -- prisma studio",
     "format:tsx": "prettier 'src/**/*.tsx' --write"
   },
   "dependencies": {
@@ -43,6 +43,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "^16.1.1",
     "prettier": "^3.8.1",
