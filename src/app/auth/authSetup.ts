@@ -13,7 +13,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: {},
       },
       authorize: async (credentials) => {
-        if (!credentials?.email || !credentials?.password) return null;
+        console.log('[Auth] Attempting login for:', credentials?.email);
+
+        if (!credentials?.email || !credentials?.password) {
+          console.log('[Auth] Missing credentials');
+          return null;
+        }
 
         const user = await prisma.user.findUnique({
           where: {
@@ -21,12 +26,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           },
         });
 
+        console.log('[Auth] User found:', user ? 'yes' : 'no');
         if (!user) return null;
 
         const isValid = await bcrypt.compare(
           credentials.password as string,
           user.password
         );
+        console.log('[Auth] Password valid:', isValid);
         if (!isValid) return null;
 
         return {
@@ -38,9 +45,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   pages: {
-    signIn: '/auth/login', // твоя страница логина
+    signIn: '/auth/login',
   },
   session: {
     strategy: 'jwt',
   },
+  trustHost: true,
 });
