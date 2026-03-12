@@ -6,18 +6,28 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { signIn } from 'next-auth/react';
+import { useActionState } from 'react';
 
 export default function FormLogin({ className, ...props }: React.ComponentProps<'div'>) {
-  async function handleLogin(formData: FormData) {
+  async function handleLogin(_: unknown, formData: FormData) {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    await signIn('credentials', {
+    const result = await signIn('credentials', {
       email,
       password,
       redirectTo: '/board',
+      redirect: false,
     });
+
+    if (result?.error) {
+      console.error('[Login] Error:', result.error);
+      return { error: 'Неверный email или пароль' };
+    }
+    return null;
   }
+
+  const [state, formAction] = useActionState(handleLogin, null);
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
@@ -27,7 +37,7 @@ export default function FormLogin({ className, ...props }: React.ComponentProps<
           <CardDescription>Введите свой е-мейл и пароль для входа</CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={handleLogin}>
+          <form action={formAction}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
@@ -39,6 +49,9 @@ export default function FormLogin({ className, ...props }: React.ComponentProps<
                 </div>
                 <Input name="password" type="password" required />
               </div>
+              {state?.error && (
+                <div className="text-sm text-red-500">{state.error}</div>
+              )}
               <div className="flex flex-col gap-3">
                 <Button type="submit" className="w-full">
                   Войти
