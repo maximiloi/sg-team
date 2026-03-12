@@ -22,7 +22,13 @@ jobs:
       # 3. Зависимости
       - run: npm ci --frozen-lockfile
 
-      # 4. Build (фикс для /api/clients)
+      # 4. Prisma generate (обязательно перед build)
+      - name: Prisma Generate
+        run: npx prisma generate --schema=prisma/schema.prisma
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      # 5. Build (фикс для /api/clients)
       - name: Build
         run: npm run build
         env:
@@ -31,7 +37,7 @@ jobs:
           TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
           NEXT_TELEMETRY_DISABLED: 1
 
-      # 5. Подготовка деплоя (быстро через tar)
+      # 6. Подготовка деплоя (быстро через tar)
       - name: Prepare deploy
         run: |
           mkdir -p deploy
@@ -44,7 +50,7 @@ jobs:
           ls -la deploy/.next/
           tar -czf deploy.tar.gz -C deploy .
 
-      # 6. SSH агент
+      # 7. SSH агент
       - uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
