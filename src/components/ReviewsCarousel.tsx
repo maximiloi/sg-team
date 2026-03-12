@@ -1,5 +1,7 @@
 'use client';
 
+import { Star } from 'lucide-react';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Carousel,
@@ -8,32 +10,48 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { Star } from 'lucide-react';
 
 const reviews = [
   {
-    name: 'Алексей М.',
-    text: 'Быстро нашли причину с выхлопом. Подъёмник бесплатно — респект! Рекомендую.',
+    name: 'Павел Ч.',
+    text: 'Отличный сервис! Работают настоящие спецы. Могут решить любой вопрос по ремонту авто. Я доволен',
     rating: 5,
     source: 'Яндекс',
-    date: '15 февраля 2026',
+    date: '6 февраля 2026',
+    avatar: undefined,
   },
   {
-    name: 'Марина К.',
-    text: 'Тормоза скрипели ужасно. Сделали за день, объяснили всё по-человечески. 5 звёзд!',
+    name: 'Аня И.',
+    text: 'Отличный, надежный сервис. Ребята профессионалы своего дела. Быстро устранили неполадки в короткие сроки. Тормоза работают исправно, нет больше люфта в руле, машина едет уверенно. Спасибо.',
     rating: 5,
-    source: 'Avito',
-    date: '3 января 2026',
-    avatar: '/placeholder-user.jpg',
+    source: 'Яндекс',
+    date: '13 февраля 2026',
+    avatar: undefined,
   },
   {
-    name: 'Дмитрий С.',
-    text: 'Приехал по объявлению с Авито. Качественно, недорого, без навязывания лишнего.',
+    name: 'Дмитрий',
+    text: 'Заезжал переварить гофру на глушителе. Всё сделали быстро и по делу. Показали проблему, сразу озвучили цену — без всяких накруток. По времени недолго, по деньгам вполне адекватно. Сейчас машина работает тихо, ничего не сечет. Спасибо за нормальный подход 👍',
     rating: 5,
     source: 'Avito',
-    date: '19 декабря 2025',
+    date: '14 февраля 2025',
+    avatar: undefined,
   },
-  // добавляйте свои реальные отзывы и фото
+  {
+    name: 'Елисей',
+    text: 'Все отлично, Рекомендую!',
+    rating: 5,
+    source: 'Авито',
+    date: '10 декабря 2024',
+    avatar: undefined,
+  },
+  {
+    name: 'Ольга В.',
+    text: 'Ребята - профи! Подробно и доступно объясняют проблему, подбирают качественные запчасти, все работы согласовывают.',
+    rating: 5,
+    source: 'Яндекс',
+    date: '24 апреля 2025',
+    avatar: undefined,
+  },
 ];
 
 export default function ReviewsCarousel() {
@@ -48,7 +66,7 @@ export default function ReviewsCarousel() {
               <div className="bg-card flex h-full flex-col rounded-xl border p-6">
                 <div className="mb-4 flex items-center gap-3">
                   <Avatar>
-                    <AvatarImage src={review.avatar} alt={review.name} />
+                    <AvatarImage src={review?.avatar} alt={review.name} />
                     <AvatarFallback>{review.name[0]}</AvatarFallback>
                   </Avatar>
                   <div>
@@ -79,8 +97,8 @@ export default function ReviewsCarousel() {
           ))}
         </CarouselContent>
 
-        <CarouselPrevious className="hidden sm:-left-12 sm:block" />
-        <CarouselNext className="hidden sm:-right-12 sm:block" />
+        <CarouselPrevious className="hidden sm:-left-12 sm:flex" />
+        <CarouselNext className="hidden sm:-right-12 sm:flex" />
       </Carousel>
     </section>
   );
