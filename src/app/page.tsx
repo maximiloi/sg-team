@@ -1,6 +1,7 @@
 import AdvantageList from '@/components/AdvantageList';
 import Calls from '@/components/Calls';
 import ContactMap from '@/components/ContactMap';
+import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import HowWeWork from '@/components/HowWeWork';
@@ -22,6 +23,7 @@ export default function Home() {
         <HowWeWork />
         <ContactMap />
       </main>
+      <Footer />
     </>
   );
 }
