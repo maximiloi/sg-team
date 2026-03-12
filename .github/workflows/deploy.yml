@@ -99,6 +99,11 @@ jobs:
             NODE_ENV=production
             EOF
 
+            # Экспортируем переменные для текущей сессии
+            export DATABASE_URL="${{ secrets.DATABASE_URL }}"
+            export TELEGRAM_BOT_TOKEN="${{ secrets.TELEGRAM_BOT_TOKEN }}"
+            export TELEGRAM_MANAGER_IDS="${{ secrets.TELEGRAM_MANAGER_IDS }}"
+
             echo "⚙️ Проверяем Prisma..."
             if [ ! -d "node_modules/.prisma/client" ]; then
               echo "🔄 Устанавливаем зависимости (первый запуск)..."
