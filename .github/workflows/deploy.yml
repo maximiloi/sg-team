@@ -40,7 +40,7 @@ jobs:
           cp -r public/* deploy/public/ 2>/dev/null || true
           cp -r prisma deploy/
           cp -r src deploy/
-          cp package*.json ecosystem.config.cjs deploy/
+          cp package*.json ecosystem.config.cjs prisma.config.ts deploy/
           ls -la deploy/.next/
           tar -czf deploy.tar.gz -C deploy .
 
@@ -107,7 +107,7 @@ jobs:
             npx prisma generate --schema=prisma/schema.prisma
 
             echo "🗄️ ПРИМЕНЯЕМ МИГРАЦИИ БД..."
-            npx prisma migrate deploy
+            npx prisma migrate deploy --schema=prisma/schema.prisma
 
             echo "🔄 PM2 reload..."
             pm2 reload ecosystem.config.cjs --update-env || pm2 start ecosystem.config.cjs --env production
