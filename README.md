@@ -2,7 +2,7 @@
 
 Веб-приложение для автосервиса **Super Garage Team** с интеграцией Telegram-бота для уведомлений о новых заявках.
 
-🌐 **Сайт:** [sgt-service.ru](https://sgt-service.ru/)
+**Сайт:** [sgt-service.ru](https://sgt-service.ru/)
 
 ---
 
