@@ -1,15 +1,20 @@
 'use client';
 
-import { signupAction } from '@/app/actions/signup';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
+import { signIn } from 'next-auth/react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+import { cn } from '@/lib/utils';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+
+import { signupAction } from '@/actions/signup';
 
 export type SignupData = {
   name: string;
@@ -17,7 +22,6 @@ export type SignupData = {
   password: string;
 };
 
-// Схема валидации
 const schema = z
   .object({
     name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
@@ -54,6 +58,15 @@ export default function FormRegistration({ className, ...props }: React.Componen
         email: data.email,
         password: data.password,
       });
+
+      const res = await signIn('credentials', {
+        redirect: true,
+        email: data.email,
+        password: data.password,
+        callbackUrl: '/board',
+      });
+
+      console.log(res);
     } catch (error) {
       console.error('Ошибка регистрации:', error);
     }
@@ -69,21 +82,18 @@ export default function FormRegistration({ className, ...props }: React.Componen
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
-              {/* Имя */}
               <div className="grid gap-2">
                 <Label htmlFor="name">Имя</Label>
                 <Input id="name" type="text" {...register('name')} />
                 {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
               </div>
 
-              {/* Email */}
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" type="email" {...register('email')} />
                 {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
               </div>
 
-              {/* Пароль */}
               <div className="grid gap-2">
                 <Label htmlFor="password">Пароль</Label>
                 <div className="relative">
@@ -109,7 +119,6 @@ export default function FormRegistration({ className, ...props }: React.Componen
                 </p>
               </div>
 
-              {/* Подтверждение пароля */}
               <div className="grid gap-2">
                 <Label htmlFor="confirmPassword">Повтор пароля</Label>
                 <Input
@@ -122,8 +131,15 @@ export default function FormRegistration({ className, ...props }: React.Componen
                 )}
               </div>
 
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? 'Регистрация...' : 'Зарегистрироваться'}
+              <Button type="submit" className="w-full cursor-pointer" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Регистрация...
+                  </>
+                ) : (
+                  'Зарегистрироваться'
+                )}
               </Button>
             </div>
           </form>

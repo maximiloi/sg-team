@@ -1,27 +1,15 @@
-import { Button } from '@/components/ui/button';
-import { redirect } from 'next/navigation';
-import { auth, signOut } from '../auth/authSetup';
+import RequestsByStatusList from '@/components/RequestsByStatusList';
+import { RequestStatus } from '@/generated/prisma';
+import { getRequestsByStatus } from '../../actions/requests';
 
 export default async function Page() {
-  const session = await auth();
-
-  if (!session) {
-    redirect('/');
-  }
+  const newReq = await getRequestsByStatus(RequestStatus.NEW);
+  const inProgress = await getRequestsByStatus(RequestStatus.IN_PROGRESS);
 
   return (
-    <div>
-      <form
-        action={async () => {
-          'use server';
-          await signOut();
-        }}
-      >
-        <Button type="submit">Sign Out</Button>
-      </form>
-
-      <div>Board</div>
-      <pre>{JSON.stringify(session, null, 2)}</pre>
-    </div>
+    <>
+      <RequestsByStatusList status={RequestStatus.NEW} requests={newReq} />
+      <RequestsByStatusList status={RequestStatus.IN_PROGRESS} requests={inProgress} />
+    </>
   );
 }

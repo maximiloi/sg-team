@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Rubik } from 'next/font/google';
+import { Toaster } from 'sonner';
 import './globals.css';
 
 const rubik = Rubik({
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     'замена масла',
     'шиномонтаж',
   ],
-  authors: [{ name: 'Super Garage Team', url: 'https://sgt-garage.ru' }],
+  authors: [{ name: 'Super Garage Team', url: 'https://sgt-service.ru' }],
   creator: 'Super Garage Team',
   publisher: 'Super Garage Team',
   applicationName: 'Super Garage Team',
@@ -52,7 +53,7 @@ export const metadata: Metadata = {
     title: 'Автосервис - Super Garage Team',
     description:
       'Надёжный автосервис с гарантией качества. Ремонт и обслуживание автомобилей любых марок.',
-    url: 'https://sgt-garage.ru',
+    url: 'https://sgt-service.ru',
     siteName: 'Super Garage Team',
     images: [
       {
@@ -73,7 +74,7 @@ export const metadata: Metadata = {
   },
   category: 'Автосервис',
   alternates: {
-    canonical: 'https://sgt-garage.ru',
+    canonical: 'https://sgt-service.ru',
   },
   icons: {
     icon: '/favicon.ico',
@@ -87,7 +88,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body className={`${inter.variable} ${rubik.variable} antialiased`}>{children}</body>
+      <body className={`${inter.variable} ${rubik.variable} antialiased`}>
+        {children}
+        <Toaster richColors position="top-right" />
+      </body>
     </html>
   );
 }

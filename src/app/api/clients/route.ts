@@ -10,10 +10,7 @@ export async function POST(req: Request) {
     const { firstName, phone, question = '' } = body;
 
     if (!firstName || !phone) {
-      return NextResponse.json(
-        { error: 'Имя и телефон обязательны' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Имя и телефон обязательны' }, { status: 400 });
     }
 
     let client = await prisma.client.findUnique({
@@ -39,9 +36,7 @@ export async function POST(req: Request) {
     });
 
     for (const id of MANAGER_IDS) {
-      const questionText = question?.trim()
-        ? `\n❓ Вопрос: ${question.trim()}`
-        : '';
+      const questionText = question?.trim() ? `\n❓ Вопрос: ${question.trim()}` : '';
 
       await bot.api.sendMessage(
         id,
@@ -50,18 +45,24 @@ export async function POST(req: Request) {
           `📱 ${phone}\n` +
           `${questionText}\n\n` +
           `🆕 Обращение #${request.id}`,
+        {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: '🔗 Открыть заявку',
+                  url: `${process.env.NEXTAUTH_URL}/board/request/${request.id}`,
+                },
+              ],
+            ],
+          },
+        },
       );
     }
 
-    return NextResponse.json(
-      { success: true, client, request },
-      { status: 201 },
-    );
+    return NextResponse.json({ success: true, client, request }, { status: 201 });
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { error: 'Ошибка при обработке заявки' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Ошибка при обработке заявки' }, { status: 500 });
   }
 }
