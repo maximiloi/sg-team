@@ -21,7 +21,7 @@ ALTER COLUMN "requestId" SET NOT NULL;
 
 -- AlterTable
 ALTER TABLE "public"."Request" ADD COLUMN     "status" "public"."RequestStatus" NOT NULL DEFAULT 'NEW',
-ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL,
+ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN     "updatedById" TEXT;
 
 -- AddForeignKey
