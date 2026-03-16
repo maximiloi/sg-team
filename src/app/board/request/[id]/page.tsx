@@ -1,13 +1,17 @@
 import { getRequestById } from '@/actions/requests';
+import { auth } from '@/app/auth/authSetup';
 import ButtonsAction from '@/components/ButtonsAction';
 import { Card, CardContent } from '@/components/ui/card';
 import { STATUS_LABEL } from '@/constants/statusLabels';
+import { redirect } from 'next/navigation';
 
-export default async function RequestPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function RequestPage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await auth();
+  if (!session) {
+    const callbackUrl = `/board/request/${(await params).id}`;
+    redirect(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+  }
+
   const { id } = await params;
   const request = await getRequestById(Number(id));
 
@@ -16,23 +20,21 @@ export default async function RequestPage({
   }
 
   return (
-    <div className='p-4'>
+    <div className="p-4">
       <Card>
-        <CardContent className='space-y-2 p-4'>
-          <h1 className='text-2xl font-bold mb-4'>
+        <CardContent className="space-y-2 p-4">
+          <h1 className="mb-4 text-2xl font-bold">
             Заявка #{request.id}
             <span> ({STATUS_LABEL[request.status]})</span>
           </h1>
           <div>
-            <strong>Клиент:</strong> {request.client.firstName}{' '}
-            {request.client.lastName ?? ''}
+            <strong>Клиент:</strong> {request.client.firstName} {request.client.lastName ?? ''}
           </div>
           <div>
             <strong>Телефон:</strong> {request.client.phone}
           </div>
           <div>
-            <strong>Дата и время создания:</strong>{' '}
-            {new Date(request.createdAt).toLocaleString()}
+            <strong>Дата и время создания:</strong> {new Date(request.createdAt).toLocaleString()}
           </div>
           <ButtonsAction
             phone={request.client.phone}

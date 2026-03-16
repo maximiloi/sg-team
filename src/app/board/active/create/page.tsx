@@ -15,9 +15,7 @@ import { toast } from 'sonner';
 import z from 'zod';
 
 const schema = z.object({
-  phone: z
-    .string()
-    .min(18, { message: 'Укажите номер в формате +7 (999) 123-45-67' }),
+  phone: z.string().min(18, { message: 'Укажите номер в формате +7 (999) 123-45-67' }),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   telegramId: z.string().optional(),
@@ -69,9 +67,9 @@ export default function FormAppointment() {
     <FormProvider {...methods}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className='max-w-2xl mx-auto space-y-6 p-6 bg-white rounded-2xl shadow'
+        className="mx-auto max-w-2xl space-y-6 rounded-2xl bg-white p-6 shadow"
       >
-        <h2 className='text-xl font-bold'>Создать запись</h2>
+        <h2 className="text-xl font-bold">Создать запись</h2>
         <FormAppointmentPersonalInfo />
         <Separator />
         <FormAppointmentVehicleInfo />
@@ -80,13 +78,10 @@ export default function FormAppointment() {
         <Separator />
         <FormAppointmentType />
         <div>
-          <label className='block mb-1'>Комментарий</label>
-          <Textarea
-            {...methods.register('comment')}
-            placeholder='Доп. информация...'
-          />
+          <label className="mb-1 block">Комментарий</label>
+          <Textarea {...methods.register('comment')} placeholder="Доп. информация..." />
         </div>
-        <Button type='submit' className='w-full'>
+        <Button type="submit" className="w-full">
           Создать
         </Button>
       </form>

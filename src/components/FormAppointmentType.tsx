@@ -8,24 +8,24 @@ export default function FormAppointmentType() {
 
   return (
     <div>
-      <label className='block mb-1'>Вид работы</label>
-      <div className='grid gap-2'>
+      <label className="mb-1 block">Вид работы</label>
+      <div className="grid gap-2">
         <Button
-          type='button'
+          type="button"
           variant={watch('type') === 'MAINTENANCE' ? 'default' : 'outline'}
           onClick={() => setValue('type', 'MAINTENANCE')}
         >
           Техобслуживание
         </Button>
         <Button
-          type='button'
+          type="button"
           variant={watch('type') === 'DIAGNOSTICS' ? 'default' : 'outline'}
           onClick={() => setValue('type', 'DIAGNOSTICS')}
         >
           Диагностика
         </Button>
         <Button
-          type='button'
+          type="button"
           variant={watch('type') === 'REPAIR' ? 'default' : 'outline'}
           onClick={() => setValue('type', 'REPAIR')}
         >

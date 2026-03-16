@@ -16,11 +16,8 @@ export default function ButtonCreateRecord() {
   }
 
   return (
-    <Button
-      onClick={() => router.push('/board/active/create')}
-      className='flex items-center gap-2'
-    >
-      <Plus className='mr-2' />
+    <Button onClick={() => router.push('/board/active/create')} className="flex items-center gap-2">
+      <Plus className="mr-2" />
       Создать запись
     </Button>
   );

@@ -8,18 +8,15 @@ import { useEffect, useMemo, useState } from 'react';
 
 export default function SidebarCalendars() {
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [appointments, setAppointments] = useState<
-    { id: string; date: Date; status: string }[]
-  >([]);
+  const [appointments, setAppointments] = useState<{ id: string; date: Date; status: string }[]>(
+    [],
+  );
 
   useEffect(() => {
     const fetchAppointments = async () => {
       const startDate = startOfMonth(new Date());
       const endDate = endOfMonth(new Date());
-      const { appointments, error } = await getAppointmentsForCalendar(
-        startDate,
-        endDate
-      );
+      const { appointments, error } = await getAppointmentsForCalendar(startDate, endDate);
       if (!error) {
         setAppointments(appointments);
       }
@@ -44,10 +41,7 @@ export default function SidebarCalendars() {
           statuses.push(appointment.status);
           map.set(dateKey, statuses);
         });
-      } else if (
-        appointment.status !== 'DONE' &&
-        appointment.status !== 'CANCELLED'
-      ) {
+      } else if (appointment.status !== 'DONE' && appointment.status !== 'CANCELLED') {
         // Для других активных статусов (SCHEDULED, CONFIRMED) добавляем только на дату записи
         const dateKey = format(startDate, 'yyyy-MM-dd');
         const statuses = map.get(dateKey) || [];
@@ -60,11 +54,11 @@ export default function SidebarCalendars() {
 
   return (
     <CalendarAppointment
-      mode='single'
+      mode="single"
       selected={date}
       onSelect={setDate}
       locale={ru}
-      className='rounded-lg border'
+      className="rounded-lg border"
       appointmentsByDate={appointmentsByDate}
     />
   );

@@ -18,7 +18,7 @@ type Props = {
 
 export function SidebarBoard({ session }: Props) {
   return (
-    <Sidebar collapsible='icon'>
+    <Sidebar collapsible="icon">
       <SidebarHeader />
       <SidebarContent>
         <SidebarMenuNav />

@@ -14,23 +14,11 @@ export default async function Page() {
   return (
     <>
       <RequestsByStatusList status={RequestStatus.NEW} requests={newReq} />
-      <RequestsByStatusList
-        status={RequestStatus.IN_PROGRESS}
-        requests={inProgress}
-      />
-      <RequestsByStatusList
-        status={RequestStatus.CALLBACK}
-        requests={callbackClient}
-      />
+      <RequestsByStatusList status={RequestStatus.IN_PROGRESS} requests={inProgress} />
+      <RequestsByStatusList status={RequestStatus.CALLBACK} requests={callbackClient} />
       <RequestsByStatusList status={RequestStatus.DONE} requests={done} />
-      <RequestsByStatusList
-        status={RequestStatus.REJECTION}
-        requests={rejection}
-      />
-      <RequestsByStatusList
-        status={RequestStatus.CANCELLED}
-        requests={cancelled}
-      />
+      <RequestsByStatusList status={RequestStatus.REJECTION} requests={rejection} />
+      <RequestsByStatusList status={RequestStatus.CANCELLED} requests={cancelled} />
     </>
   );
 }

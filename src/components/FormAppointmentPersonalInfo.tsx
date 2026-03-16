@@ -1,12 +1,7 @@
 'use client';
 
 import { checkClientByPhone } from '@/actions/client';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useFormContext } from 'react-hook-form';
 import { IMaskInput } from 'react-imask';
@@ -29,7 +24,7 @@ export default function FormAppointmentPersonalInfo() {
     <div>
       <FormField
         control={control}
-        name='phone'
+        name="phone"
         render={({ field }) => (
           <FormItem>
             <FormControl>
@@ -39,23 +34,20 @@ export default function FormAppointmentPersonalInfo() {
                   field.onChange(value);
                   handlePhoneChange(value);
                 }}
-                mask='+7 (000) 000-00-00'
+                mask="+7 (000) 000-00-00"
                 placeholder={'+7 (000) 000-00-00'}
-                className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-1 text-sm mb-2
-                  ring-offset-background placeholder:text-muted-foreground 
-                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring 
-                  focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
-                inputMode='tel'
-                type='tel'
+                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring mb-2 flex h-10 w-full rounded-md border px-3 py-1 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                inputMode="tel"
+                type="tel"
               />
             </FormControl>
-            <FormMessage className='mb-2' />
+            <FormMessage className="mb-2" />
           </FormItem>
         )}
       />
-      <Input placeholder='Имя' {...register('firstName')} className='mb-2' />
-      <Input placeholder='Фамилия' {...register('lastName')} className='mb-2' />
-      <Input placeholder='Telegram ID' {...register('telegramId')} />
+      <Input placeholder="Имя" {...register('firstName')} className="mb-2" />
+      <Input placeholder="Фамилия" {...register('lastName')} className="mb-2" />
+      <Input placeholder="Telegram ID" {...register('telegramId')} />
     </div>
   );
 }

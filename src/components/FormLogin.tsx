@@ -2,6 +2,7 @@
 
 import { Loader2 } from 'lucide-react';
 import { signIn } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useActionState, useTransition } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,9 @@ import { cn } from '@/lib/utils';
 
 export default function FormLogin({ className, ...props }: React.ComponentProps<'div'>) {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/board';
 
   async function handleLogin(formData: FormData) {
     const email = formData.get('email') as string;
@@ -21,7 +25,6 @@ export default function FormLogin({ className, ...props }: React.ComponentProps<
     const result = await signIn('credentials', {
       email,
       password,
-      redirectTo: '/board',
       redirect: false,
     });
 
@@ -29,6 +32,11 @@ export default function FormLogin({ className, ...props }: React.ComponentProps<
       console.error('[Login] Error:', result.error);
       return { error: 'Неверный email или пароль' };
     }
+
+    startTransition(() => {
+      router.push(callbackUrl);
+    });
+
     return null;
   }
 

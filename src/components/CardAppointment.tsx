@@ -1,9 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  APPOINTMENT_STATUS_COLORS,
-  APPOINTMENT_STATUS_LABEL,
-} from '@/constants/statusLabels';
+import { APPOINTMENT_STATUS_COLORS, APPOINTMENT_STATUS_LABEL } from '@/constants/statusLabels';
 import { Appointment } from '@/generated/prisma';
 import { formatDateForCardAppointments } from '@/lib/dateUtils';
 import Link from 'next/link';
@@ -22,23 +19,19 @@ type AppointmentWithRelations = Appointment & {
   } | null;
 };
 
-export function CardAppointment({
-  appointment,
-}: {
-  appointment: AppointmentWithRelations;
-}) {
+export function CardAppointment({ appointment }: { appointment: AppointmentWithRelations }) {
   return (
     <Card>
       <Link href={`/board/appointment/${appointment.id}`}>
         <CardHeader>
-          <div className='flex items-center justify-between'>
+          <div className="flex items-center justify-between">
             <CardTitle>
               {formatDateForCardAppointments(appointment.date)} -{' '}
               {appointment.type === 'MAINTENANCE'
                 ? 'Техобслуживание'
                 : appointment.type === 'DIAGNOSTICS'
-                ? 'Диагностика'
-                : 'Ремонт'}
+                  ? 'Диагностика'
+                  : 'Ремонт'}
             </CardTitle>
             <Badge
               style={{
@@ -55,10 +48,7 @@ export function CardAppointment({
         <p>
           <strong>Клиент:</strong> {appointment.client.firstName}{' '}
           {appointment.client.lastName || ''} (
-          <a
-            href={`tel:${appointment.client.phone}`}
-            className='text-blue-500 hover:underline'
-          >
+          <a href={`tel:${appointment.client.phone}`} className="text-blue-500 hover:underline">
             {appointment.client.phone}
           </a>
           )
@@ -66,8 +56,7 @@ export function CardAppointment({
         {appointment.car && (
           <>
             <p>
-              <strong>Автомобиль:</strong> {appointment.car.make}{' '}
-              {appointment.car.model}
+              <strong>Автомобиль:</strong> {appointment.car.make} {appointment.car.model}
             </p>
             {appointment.car.plate !== 'Не указано' && (
               <p>

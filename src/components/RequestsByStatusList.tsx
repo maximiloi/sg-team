@@ -27,35 +27,28 @@ export default function RequestsByStatusList({
 
   return (
     <>
-      <h2 className='text-xl font-semibold mt-8 mb-4'>
-        {STATUS_LABEL[status]}
-      </h2>
+      <h2 className="mt-8 mb-4 text-xl font-semibold">{STATUS_LABEL[status]}</h2>
       <Carousel>
         <CarouselContent>
           {requests.map((req) => (
-            <CarouselItem
-              key={req.id}
-              className='md:basis-1/2 lg:basis-1/3 basis-[80%] pl-4'
-            >
+            <CarouselItem key={req.id} className="basis-[80%] pl-4 md:basis-1/2 lg:basis-1/3">
               <Link href={`/board/request/${req.id}`}>
                 <Card
-                  className='py-2'
+                  className="py-2"
                   style={{
                     backgroundImage:
                       'linear-gradient(to top, rgba(0, 210, 252, 0.15), transparent)',
                   }}
                 >
-                  <CardContent className='px-4'>
+                  <CardContent className="px-4">
                     <div>
-                      <strong>Клиент:</strong> {req.client.firstName}{' '}
-                      {req.client.lastName ?? ''}
+                      <strong>Клиент:</strong> {req.client.firstName} {req.client.lastName ?? ''}
                     </div>
                     <div>
                       <strong>Телефон:</strong> {req.client.phone}
                     </div>
                     <div>
-                      <strong>Дата и время:</strong>{' '}
-                      {new Date(req.createdAt).toLocaleString()}
+                      <strong>Дата и время:</strong> {new Date(req.createdAt).toLocaleString()}
                     </div>
                   </CardContent>
                 </Card>

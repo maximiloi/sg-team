@@ -2,12 +2,7 @@
 
 import { checkClientByPhone } from '@/actions/client';
 import { Button } from '@/components/ui/button';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -75,28 +70,23 @@ export default function FormAppointmentVehicleInfo() {
 
   return (
     <div>
-      <h3 className='font-medium mb-2'>Автомобиль</h3>
+      <h3 className="mb-2 font-medium">Автомобиль</h3>
       {phone && phone.length === 18 && (
-        <div className='mb-2'>
+        <div className="mb-2">
           {clientCars.length > 0 ? (
-            <div className='space-y-2'>
+            <div className="space-y-2">
               {clientCars.map((car) => (
                 <Button
                   key={car.id}
-                  type='button'
-                  variant='outline'
+                  type="button"
+                  variant="outline"
                   onClick={() => handleSelectCar(car)}
-                  className='w-full justify-start'
+                  className="w-full justify-start"
                 >
                   {car.make} {car.model} ({car.plate})
                 </Button>
               ))}
-              <Button
-                type='button'
-                variant='outline'
-                onClick={handleAddNewCar}
-                className='w-full'
-              >
+              <Button type="button" variant="outline" onClick={handleAddNewCar} className="w-full">
                 Добавить автомобиль
               </Button>
             </div>
@@ -107,32 +97,28 @@ export default function FormAppointmentVehicleInfo() {
         <>
           <FormField
             control={control}
-            name='vin'
+            name="vin"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
                   <Input
-                    placeholder='VIN'
+                    placeholder="VIN"
                     {...field}
                     onChange={(e) => {
                       const upperCaseValue = e.target.value.toUpperCase();
                       field.onChange(upperCaseValue);
                       handleVinChange(upperCaseValue);
                     }}
-                    className='mb-2'
+                    className="mb-2"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Input placeholder='Марка' {...register('make')} className='mb-2' />
-          <Input placeholder='Модель' {...register('model')} className='mb-2' />
-          <Input
-            placeholder='Госномер'
-            {...register('plate')}
-            className='mb-2'
-          />
+          <Input placeholder="Марка" {...register('make')} className="mb-2" />
+          <Input placeholder="Модель" {...register('model')} className="mb-2" />
+          <Input placeholder="Госномер" {...register('plate')} className="mb-2" />
         </>
       )}
     </div>

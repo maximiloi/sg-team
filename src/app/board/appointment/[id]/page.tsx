@@ -1,17 +1,8 @@
 import { getAppointmentById } from '@/actions/appointment';
 import { Badge } from '@/components/ui/badge';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import {
-  APPOINTMENT_STATUS_COLORS,
-  APPOINTMENT_STATUS_LABEL,
-} from '@/constants/statusLabels';
+import { APPOINTMENT_STATUS_COLORS, APPOINTMENT_STATUS_LABEL } from '@/constants/statusLabels';
 import { formatDateForCreateAppointment } from '@/lib/dateUtils';
 
 export default async function AppointmentDetailsPage({
@@ -23,22 +14,22 @@ export default async function AppointmentDetailsPage({
   const { appointment, error } = await getAppointmentById(id);
 
   if (error || !appointment) {
-    return <div className='text-red-500'>Ошибка: Запись не найдена</div>;
+    return <div className="text-red-500">Ошибка: Запись не найдена</div>;
   }
 
   return (
     <>
-      <h1 className='text-2xl font-bold mb-6'>Детали записи</h1>
+      <h1 className="mb-6 text-2xl font-bold">Детали записи</h1>
       <Card>
         <CardHeader>
-          <div className='flex items-center justify-between'>
+          <div className="flex items-center justify-between">
             <CardTitle>
               {formatDateForCreateAppointment(appointment.date)} -{' '}
               {appointment.type === 'MAINTENANCE'
                 ? 'Техобслуживание'
                 : appointment.type === 'DIAGNOSTICS'
-                ? 'Диагностика'
-                : 'Ремонт'}
+                  ? 'Диагностика'
+                  : 'Ремонт'}
             </CardTitle>
             <Badge
               style={{
@@ -52,10 +43,7 @@ export default async function AppointmentDetailsPage({
           <p>
             <strong>Клиент:</strong> {appointment.client.firstName}{' '}
             {appointment.client.lastName || ''} (
-            <a
-              href={`tel:${appointment.client.phone}`}
-              className='text-blue-500 hover:underline'
-            >
+            <a href={`tel:${appointment.client.phone}`} className="text-blue-500 hover:underline">
               {appointment.client.phone}
             </a>
             )
@@ -67,12 +55,11 @@ export default async function AppointmentDetailsPage({
               <strong>Комментарий:</strong> {appointment.comment}
             </p>
           )}
-          <Separator className='my-4' />
+          <Separator className="my-4" />
           {appointment.car && (
             <>
               <p>
-                <strong>Автомобиль:</strong> {appointment.car.make}{' '}
-                {appointment.car.model}
+                <strong>Автомобиль:</strong> {appointment.car.make} {appointment.car.model}
               </p>
               {appointment.car.plate !== 'Не указано' && (
                 <p>
@@ -82,10 +69,9 @@ export default async function AppointmentDetailsPage({
             </>
           )}
         </CardContent>
-        <CardFooter className='gap-4 text-gray-300'>
+        <CardFooter className="gap-4 text-gray-300">
           <p>
-            <strong>Дата создания:</strong>{' '}
-            {formatDateForCreateAppointment(appointment.createdAt)}
+            <strong>Дата создания:</strong> {formatDateForCreateAppointment(appointment.createdAt)}
           </p>
           <p>
             <strong>ID записи:</strong> {appointment.id}
