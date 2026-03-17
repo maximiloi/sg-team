@@ -16,7 +16,15 @@ export default function FormAppointmentPersonalInfo() {
         setValue('firstName', client.firstName);
         setValue('lastName', client.lastName || '');
         setValue('telegramId', client.telegramId || '');
+      } else {
+        setValue('firstName', '');
+        setValue('lastName', '');
+        setValue('telegramId', '');
       }
+    } else {
+      setValue('firstName', '');
+      setValue('lastName', '');
+      setValue('telegramId', '');
     }
   };
 
