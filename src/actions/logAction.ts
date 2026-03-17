@@ -9,7 +9,7 @@ export async function logAction({
   clientId,
 }: {
   action: string;
-  requestId?: number;
+  requestId: number;
   clientId?: string;
 }) {
   const session = await auth();
@@ -22,7 +22,7 @@ export async function logAction({
     data: {
       action,
       requestId,
-      clientId,
+      ...(clientId !== undefined && { clientId }),
       userId: session.user.id,
     },
   });
