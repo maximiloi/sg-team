@@ -18,24 +18,26 @@ type Car = {
 
 export default function FormAppointmentVehicleInfo() {
   const { control, setValue, register, watch } = useFormContext();
-  const [showVehicleForm, setShowVehicleForm] = useState(false);
+  const [hasClientData, setHasClientData] = useState(false);
   const [clientCars, setClientCars] = useState<Car[]>([]);
+  const [selectedCarId, setSelectedCarId] = useState<string | null>(null);
   const phone = watch('phone');
 
   useEffect(() => {
     const fetchClientCars = async () => {
       if (phone && phone.length === 18) {
         const client = await checkClientByPhone({ phone });
-        if (client && client.cars) {
+        if (client && client.cars && client.cars.length > 0) {
           setClientCars(client.cars as Car[]);
-          setShowVehicleForm(false);
+          setHasClientData(true);
         } else {
           setClientCars([]);
-          setShowVehicleForm(true);
+          setHasClientData(true);
         }
       } else {
         setClientCars([]);
-        setShowVehicleForm(false);
+        setHasClientData(false);
+        setSelectedCarId(null);
       }
     };
 
@@ -57,7 +59,7 @@ export default function FormAppointmentVehicleInfo() {
     setValue('make', car.make);
     setValue('model', car.model);
     setValue('plate', car.plate);
-    setShowVehicleForm(true);
+    setSelectedCarId(car.id);
   };
 
   const handleAddNewCar = () => {
@@ -65,36 +67,53 @@ export default function FormAppointmentVehicleInfo() {
     setValue('make', '');
     setValue('model', '');
     setValue('plate', '');
-    setShowVehicleForm(true);
+    setSelectedCarId(null);
+  };
+
+  const handleBackToSelection = () => {
+    setValue('vin', '');
+    setValue('make', '');
+    setValue('model', '');
+    setValue('plate', '');
+    setSelectedCarId(null);
   };
 
   return (
     <div>
       <h3 className="mb-2 font-medium">Автомобиль</h3>
-      {phone && phone.length === 18 && (
-        <div className="mb-2">
-          {clientCars.length > 0 ? (
-            <div className="space-y-2">
-              {clientCars.map((car) => (
-                <Button
-                  key={car.id}
-                  type="button"
-                  variant="outline"
-                  onClick={() => handleSelectCar(car)}
-                  className="w-full justify-start"
-                >
-                  {car.make} {car.model} ({car.plate})
-                </Button>
-              ))}
-              <Button type="button" variant="outline" onClick={handleAddNewCar} className="w-full">
-                Добавить автомобиль
-              </Button>
-            </div>
-          ) : null}
+      {phone && phone.length === 18 && hasClientData && clientCars.length > 0 && !selectedCarId && (
+        <div className="mb-2 space-y-2">
+          <p className="text-muted-foreground text-sm">Выберите автомобиль или добавьте новый:</p>
+          {clientCars.map((car) => (
+            <Button
+              key={car.id}
+              type="button"
+              variant="outline"
+              onClick={() => handleSelectCar(car)}
+              className="w-full justify-start"
+            >
+              {car.make} {car.model} ({car.plate})
+            </Button>
+          ))}
+          <Button type="button" variant="outline" onClick={handleAddNewCar} className="w-full">
+            Добавить автомобиль
+          </Button>
         </div>
       )}
-      {showVehicleForm && (
+      {(selectedCarId !== null ||
+        (phone && phone.length === 18 && hasClientData && clientCars.length === 0) ||
+        !hasClientData) && (
         <>
+          {clientCars.length > 0 && selectedCarId !== null && (
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={handleBackToSelection}
+              className="mb-2 w-full"
+            >
+              ← Выбрать другой автомобиль
+            </Button>
+          )}
           <FormField
             control={control}
             name="vin"
