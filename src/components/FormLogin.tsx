@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useActionState, useTransition } from 'react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,8 +31,11 @@ export default function FormLogin({ className, ...props }: React.ComponentProps<
 
     if (result?.error) {
       console.error('[Login] Error:', result.error);
+      toast.error('Неверный email или пароль');
       return { error: 'Неверный email или пароль' };
     }
+
+    toast.success('Вы успешно вошли в систему');
 
     startTransition(() => {
       router.push(callbackUrl);

@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { cn } from '@/lib/utils';
@@ -59,6 +60,8 @@ export default function FormRegistration({ className, ...props }: React.Componen
         password: data.password,
       });
 
+      toast.success('Аккаунт успешно создан');
+
       const res = await signIn('credentials', {
         redirect: true,
         email: data.email,
@@ -69,6 +72,11 @@ export default function FormRegistration({ className, ...props }: React.Componen
       console.log(res);
     } catch (error) {
       console.error('Ошибка регистрации:', error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Ошибка регистрации');
+      }
     }
   };
 
