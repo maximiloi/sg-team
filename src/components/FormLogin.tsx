@@ -18,7 +18,7 @@ export default function FormLogin({ className, ...props }: React.ComponentProps<
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/board';
 
-  async function handleLogin(formData: FormData) {
+  async function handleLogin(_prevState: { error: string } | null, formData: FormData) {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
@@ -50,7 +50,7 @@ export default function FormLogin({ className, ...props }: React.ComponentProps<
           <CardDescription>Введите свой е-мейл и пароль для входа</CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={(formData) => startTransition(() => handleLogin(formData))}>
+          <form action={formAction}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
