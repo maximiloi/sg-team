@@ -1,10 +1,27 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { checkRateLimit, RATE_LIMIT_CONFIGS } from '@/lib/rateLimit';
 import { sanitizeString, SignupInput, signupSchema } from '@/lib/validations';
 import bcrypt from 'bcryptjs';
+import { headers } from 'next/headers';
 
 export async function signupAction(rawData: unknown) {
+  // Получаем IP для rate limiting
+  const headersList = await headers();
+  const forwardedFor = headersList.get('x-forwarded-for');
+  const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : 'unknown';
+
+  // Rate limiting по IP
+  const rateLimitResult = checkRateLimit(`signup:${ip}`, RATE_LIMIT_CONFIGS.registration);
+
+  if (!rateLimitResult.allowed) {
+    console.warn(`[signupAction] Rate limit exceeded for IP: ${ip}`);
+    throw new Error(
+      `Слишком много попыток регистрации. Попробуйте через ${Math.ceil(rateLimitResult.retryAfter! / 60)} мин.`,
+    );
+  }
+
   // Валидация входных данных на сервере
   const validation = signupSchema.safeParse(rawData);
 

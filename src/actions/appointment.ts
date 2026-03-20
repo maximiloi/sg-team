@@ -3,11 +3,30 @@
 import { AppointmentStatus } from '@/generated/prisma';
 import { formatDateForDB } from '@/lib/dateUtils';
 import { prisma } from '@/lib/prisma';
+import { RATE_LIMIT_CONFIGS, checkRateLimit } from '@/lib/rateLimit';
 import { AppointmentInput, appointmentSchema, sanitizeString } from '@/lib/validations';
 import { endOfDay, startOfDay } from 'date-fns';
+import { headers } from 'next/headers';
 import { z } from 'zod';
 
 export async function createAppointment(rawData: unknown) {
+  // Получаем IP для rate limiting
+  const headersList = await headers();
+  const forwardedFor = headersList.get('x-forwarded-for');
+  const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : 'unknown';
+
+  // Rate limiting по IP
+  const rateLimitResult = checkRateLimit(`appointment:${ip}`, RATE_LIMIT_CONFIGS.appointment);
+
+  if (!rateLimitResult.allowed) {
+    console.warn(`[createAppointment] Rate limit exceeded for IP: ${ip}`);
+    return {
+      success: false,
+      error: `Слишком много попыток создания записи. Попробуйте через ${Math.ceil(rateLimitResult.retryAfter! / 60)} мин.`,
+      retryAfter: rateLimitResult.retryAfter,
+    };
+  }
+
   // Валидация входных данных
   const validation = appointmentSchema.safeParse(rawData);
 

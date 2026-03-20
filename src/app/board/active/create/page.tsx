@@ -51,6 +51,28 @@ export default function FormAppointment() {
   const { handleSubmit, formState } = methods;
 
   const onSubmit = async (data: FormValues) => {
+    // Проверяем ошибки валидации формы перед отправкой
+    if (formState.errors.phone) {
+      toast.error(`Телефон: ${formState.errors.phone.message}`);
+      return;
+    }
+    if (formState.errors.date) {
+      toast.error(`Дата: ${formState.errors.date.message}`);
+      return;
+    }
+    if (formState.errors.time) {
+      toast.error(`Время: ${formState.errors.time.message}`);
+      return;
+    }
+    if (formState.errors.vin && data.vin) {
+      toast.error(`VIN: ${formState.errors.vin.message}`);
+      return;
+    }
+    if (formState.errors.plate && data.plate) {
+      toast.error(`Госномер: ${formState.errors.plate.message}`);
+      return;
+    }
+
     const result = await createAppointment(data);
 
     if (result.success) {

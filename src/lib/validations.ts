@@ -5,8 +5,8 @@ import { z } from 'zod';
 // -----------------------------------------------------------------------------
 
 export const PHONE_REGEX = /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/;
-export const VIN_REGEX = /^[A-HJ-NPR-Z0-9]{17}$/; // VIN без I, O, Q
-export const PLATE_REGEX = /^[А-Я0-9]{3,6}$/i; // Упрощённый госномер
+export const VIN_REGEX = /^[A-HJ-NPR-Z0-9]{17}$/i; // VIN без I, O, Q (17 символов)
+export const PLATE_REGEX = /^[А-ВЕКМНОРСТУХ]\d{3}[А-ВЕКМНОРСТУХ]{2}\d{2,3}$/i; // Российский госномер
 export const NAME_REGEX = /^[А-Яа-яA-Za-z]+$/;
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

@@ -121,7 +121,7 @@ export default function FormAppointmentVehicleInfo() {
               <FormItem>
                 <FormControl>
                   <Input
-                    placeholder="VIN"
+                    placeholder="VIN (17 символов)"
                     {...field}
                     onChange={(e) => {
                       const upperCaseValue = e.target.value.toUpperCase();
@@ -135,9 +135,50 @@ export default function FormAppointmentVehicleInfo() {
               </FormItem>
             )}
           />
-          <Input placeholder="Марка" {...register('make')} className="mb-2" />
-          <Input placeholder="Модель" {...register('model')} className="mb-2" />
-          <Input placeholder="Госномер" {...register('plate')} className="mb-2" />
+          <FormField
+            control={control}
+            name="make"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Марка" {...field} className="mb-2" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name="model"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Модель" {...field} className="mb-2" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name="plate"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    placeholder="Госномер (например, а000аа178)"
+                    {...field}
+                    onChange={(e) => {
+                      const upperCaseValue = e.target.value.toUpperCase();
+                      field.onChange(upperCaseValue);
+                    }}
+                    className="mb-2"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </>
       )}
     </div>

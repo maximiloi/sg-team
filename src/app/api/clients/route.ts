@@ -1,5 +1,6 @@
 import { bot } from '@/lib/bot';
 import { prisma } from '@/lib/prisma';
+import { checkRateLimit, getIpAddress, RATE_LIMIT_CONFIGS } from '@/lib/rateLimit';
 import { requestSchema, sanitizeString } from '@/lib/validations';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -8,6 +9,29 @@ const MANAGER_IDS = process.env.TELEGRAM_MANAGER_IDS?.split(',').filter(Boolean)
 
 export async function POST(req: Request) {
   try {
+    // Rate limiting по IP
+    const ip = getIpAddress(req);
+    const rateLimitResult = checkRateLimit(ip, RATE_LIMIT_CONFIGS.request);
+
+    if (!rateLimitResult.allowed) {
+      console.warn(`[API /clients] Rate limit exceeded for IP: ${ip}`);
+      return NextResponse.json(
+        {
+          error: 'Слишком много запросов. Попробуйте позже.',
+          retryAfter: rateLimitResult.retryAfter,
+        },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': String(RATE_LIMIT_CONFIGS.request.maxRequests),
+            'X-RateLimit-Remaining': String(rateLimitResult.remaining),
+            'X-RateLimit-Reset': String(rateLimitResult.resetAt),
+            'Retry-After': String(rateLimitResult.retryAfter),
+          },
+        },
+      );
+    }
+
     const body = await req.json();
 
     // Валидация входных данных через Zod схему
