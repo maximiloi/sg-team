@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { APPOINTMENT_STATUS_COLORS, APPOINTMENT_STATUS_LABEL } from '@/constants/statusLabels';
 import { Appointment } from '@/generated/prisma';
-import { formatDateForCardAppointments } from '@/lib/dateUtils';
+import { formatDateForCardAppointments, formatPhone } from '@/lib/dateUtils';
 import Link from 'next/link';
 
 // Расширяем тип Appointment, добавляя связанные данные client и car
@@ -49,7 +49,7 @@ export function CardAppointment({ appointment }: { appointment: AppointmentWithR
           <strong>Клиент:</strong> {appointment.client.firstName}{' '}
           {appointment.client.lastName || ''} (
           <a href={`tel:${appointment.client.phone}`} className="text-blue-500 hover:underline">
-            {appointment.client.phone}
+            {formatPhone(appointment.client.phone)}
           </a>
           )
         </p>

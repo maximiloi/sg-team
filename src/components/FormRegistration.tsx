@@ -17,21 +17,20 @@ import { Label } from '@/components/ui/label';
 
 import { signupAction } from '@/actions/signup';
 
-export type SignupData = {
-  name: string;
-  email: string;
-  password: string;
-};
-
 const schema = z
   .object({
-    name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
+    name: z
+      .string()
+      .min(2, 'Имя должно содержать минимум 2 символа')
+      .max(50, 'Имя слишком длинное')
+      .regex(/^[А-Яа-яA-Za-z]+$/, 'Имя должно содержать только буквы'),
     email: z.string().email('Некорректный email'),
     password: z
       .string()
-      .min(6, 'Пароль должен содержать минимум 6 символов')
+      .min(8, 'Пароль должен содержать минимум 8 символов')
       .regex(/[0-9]/, 'Пароль должен содержать хотя бы одну цифру')
-      .regex(/[A-Z]/, 'Пароль должен содержать хотя бы одну заглавную букву'),
+      .regex(/[A-Z]/, 'Пароль должен содержать хотя бы одну заглавную букву')
+      .regex(/[a-z]/, 'Пароль должен содержать хотя бы одну строчную букву'),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -58,6 +57,7 @@ export default function FormRegistration({ className, ...props }: React.Componen
         name: data.name,
         email: data.email,
         password: data.password,
+        confirmPassword: data.confirmPassword,
       });
 
       toast.success('Аккаунт успешно создан');
@@ -122,8 +122,7 @@ export default function FormRegistration({ className, ...props }: React.Componen
                   <p className="text-sm text-red-500">{errors.password.message}</p>
                 )}
                 <p className="text-xs text-gray-500">
-                  Пароль должен быть не короче 6 символов, содержать хотя бы одну цифру и заглавную
-                  букву.
+                  Минимум 8 символов, одна цифра, одна заглавная и одна строчная буква.
                 </p>
               </div>
 

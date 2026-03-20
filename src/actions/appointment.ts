@@ -3,80 +3,101 @@
 import { AppointmentStatus } from '@/generated/prisma';
 import { formatDateForDB } from '@/lib/dateUtils';
 import { prisma } from '@/lib/prisma';
+import { AppointmentInput, appointmentSchema, sanitizeString } from '@/lib/validations';
 import { endOfDay, startOfDay } from 'date-fns';
+import { z } from 'zod';
 
-export async function createAppointment(data: {
-  phone: string;
-  firstName?: string;
-  lastName?: string;
-  telegramId?: string;
-  vin?: string;
-  plate?: string;
-  make?: string;
-  model?: string;
-  date: string;
-  time: string;
-  type: 'MAINTENANCE' | 'DIAGNOSTICS' | 'REPAIR';
-  comment?: string;
-}) {
+export async function createAppointment(rawData: unknown) {
+  // Валидация входных данных
+  const validation = appointmentSchema.safeParse(rawData);
+
+  if (!validation.success) {
+    const errors = validation.error.issues.map((e) => ({
+      field: e.path.join('.'),
+      message: e.message,
+    }));
+
+    console.error('[createAppointment] Validation error:', errors);
+    return {
+      success: false,
+      error: 'Ошибка валидации данных',
+      details: errors,
+    };
+  }
+
+  const data: AppointmentInput = validation.data;
+
   try {
+    // Санитизация строковых данных
+    const sanitizedFirstName = data.firstName ? sanitizeString(data.firstName) : undefined;
+    const sanitizedLastName = data.lastName ? sanitizeString(data.lastName) : undefined;
+    const sanitizedTelegramId = data.telegramId || undefined;
+    const sanitizedVIN = data.vin ? data.vin.toUpperCase().trim() : undefined;
+    const sanitizedPlate = data.plate ? data.plate.toUpperCase().trim() : undefined;
+    const sanitizedMake = data.make ? sanitizeString(data.make) : undefined;
+    const sanitizedModel = data.model ? sanitizeString(data.model) : undefined;
+    const sanitizedComment = data.comment ? sanitizeString(data.comment.trim()) : null;
+
+    // Нормализация телефона (только цифры)
+    const normalizedPhone = data.phone.replace(/\D/g, '');
+
     // Проверяем или создаем/обновляем клиента
     let client = await prisma.client.findUnique({
-      where: { phone: data.phone },
+      where: { phone: normalizedPhone },
     });
 
     if (client) {
-      // Обновляем данные клиента, если они предоставлены
       client = await prisma.client.update({
-        where: { phone: data.phone },
+        where: { phone: normalizedPhone },
         data: {
-          firstName: data.firstName || client.firstName,
-          lastName: data.lastName || client.lastName,
-          telegramId: data.telegramId || client.telegramId,
+          firstName: sanitizedFirstName || client.firstName,
+          lastName: sanitizedLastName ?? client.lastName,
+          telegramId: sanitizedTelegramId || client.telegramId,
         },
       });
     } else {
-      // Создаем нового клиента
+      if (!sanitizedFirstName) {
+        return { success: false, error: 'Имя обязательно для записи' };
+      }
+
       client = await prisma.client.create({
         data: {
-          phone: data.phone,
-          firstName: data.firstName || 'Не указано',
-          lastName: data.lastName,
-          telegramId: data.telegramId,
+          phone: normalizedPhone,
+          firstName: sanitizedFirstName,
+          lastName: sanitizedLastName,
+          telegramId: sanitizedTelegramId,
         },
       });
     }
 
     // Проверяем или создаем/обновляем автомобиль
     let car;
-    if (data.vin || data.plate) {
+    if (sanitizedVIN || sanitizedPlate) {
+      const whereConditions = [];
+      if (sanitizedVIN) whereConditions.push({ vin: sanitizedVIN });
+      if (sanitizedPlate) whereConditions.push({ plate: sanitizedPlate });
+
       car = await prisma.car.findFirst({
-        where: {
-          OR: [{ vin: data.vin }, { plate: data.plate }].filter(
-            (condition) => Object.values(condition)[0]
-          ), // Исключаем undefined/null
-        },
+        where: { OR: whereConditions },
       });
 
       if (car) {
-        // Обновляем данные автомобиля, если они предоставлены
         car = await prisma.car.update({
           where: { id: car.id },
           data: {
-            vin: data.vin || car.vin,
-            plate: data.plate || car.plate,
-            make: data.make || car.make,
-            model: data.model || car.model,
+            vin: sanitizedVIN || car.vin,
+            plate: sanitizedPlate || car.plate,
+            make: sanitizedMake || car.make,
+            model: sanitizedModel || car.model,
           },
         });
       } else {
-        // Создаем новый автомобиль
         car = await prisma.car.create({
           data: {
-            vin: data.vin || 'Не указано',
-            plate: data.plate || 'Не указано',
-            make: data.make || 'Не указано',
-            model: data.model || 'Не указано',
+            vin: sanitizedVIN || 'Не указано',
+            plate: sanitizedPlate || 'Не указано',
+            make: sanitizedMake || 'Не указано',
+            model: sanitizedModel || 'Не указано',
             clientId: client.id,
           },
         });
@@ -89,8 +110,8 @@ export async function createAppointment(data: {
       data: {
         date: appointmentDate,
         type: data.type,
-        comment: data.comment,
-        status: 'SCHEDULED',
+        comment: sanitizedComment,
+        status: AppointmentStatus.SCHEDULED,
         clientId: client.id,
         carId: car?.id,
       },
@@ -98,7 +119,12 @@ export async function createAppointment(data: {
 
     return { success: true, appointment };
   } catch (error) {
-    console.error('Error creating appointment:', error);
+    console.error('[createAppointment] Unexpected error:', error);
+
+    if (error instanceof z.ZodError) {
+      return { success: false, error: 'Ошибка валидации данных' };
+    }
+
     return { success: false, error: 'Не удалось создать запись' };
   } finally {
     await prisma.$disconnect();
@@ -139,10 +165,10 @@ export async function getActiveAppointments() {
 
     // Разделяем записи на сегодня и завтра
     const todayAppointments = appointments.filter(
-      (appt) => appt.date.toDateString() === today.toDateString()
+      (appt) => appt.date.toDateString() === today.toDateString(),
     );
     const tomorrowAppointments = appointments.filter(
-      (appt) => appt.date.toDateString() === tomorrow.toDateString()
+      (appt) => appt.date.toDateString() === tomorrow.toDateString(),
     );
 
     return {
@@ -157,10 +183,7 @@ export async function getActiveAppointments() {
   }
 }
 
-export async function getAppointmentsForCalendar(
-  startDate: Date,
-  endDate: Date
-) {
+export async function getAppointmentsForCalendar(startDate: Date, endDate: Date) {
   try {
     const appointments = await prisma.appointment.findMany({
       where: {
