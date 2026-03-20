@@ -35,6 +35,8 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_MANAGER_IDS: ${{ secrets.TELEGRAM_MANAGER_IDS }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
           NEXT_TELEMETRY_DISABLED: 1
 
       # 6. Подготовка деплоя (быстро через tar)
@@ -96,6 +98,8 @@ jobs:
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
             TELEGRAM_MANAGER_IDS=${{ secrets.TELEGRAM_MANAGER_IDS }}
+            NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
+            AUTH_SECRET=${{ secrets.AUTH_SECRET }}
             NODE_ENV=production
             EOF
 
@@ -103,6 +107,8 @@ jobs:
             export DATABASE_URL="${{ secrets.DATABASE_URL }}"
             export TELEGRAM_BOT_TOKEN="${{ secrets.TELEGRAM_BOT_TOKEN }}"
             export TELEGRAM_MANAGER_IDS="${{ secrets.TELEGRAM_MANAGER_IDS }}"
+            export NEXTAUTH_URL="${{ secrets.NEXTAUTH_URL }}"
+            export AUTH_SECRET="${{ secrets.AUTH_SECRET }}"
 
             echo "⚙️ Проверяем Prisma..."
             if [ ! -d "node_modules/.prisma/client" ]; then

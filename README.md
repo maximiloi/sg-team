@@ -143,18 +143,21 @@ npm run dev
 
 ### Переменные окружения
 
-Создайте файл `.env` в корне проекта:
+Создайте файл `.env` в корне проекта (скопируйте из `.env.example`):
+
+```bash
+cp .env.example .env
+```
+
+Заполните файл `.env`:
 
 ```env
 # База данных
 DATABASE_URL="postgresql://user:password@localhost:5432/db_name"
 
 # NextAuth
+NEXTAUTH_URL="http://localhost:3000"
 AUTH_SECRET="your-secret-key"
-AUTH_URL="http://localhost:3000"
-
-# Telegram бот
-TELEGRAM_BOT_TOKEN="your-bot-token"
 ```
 
 > **Примечание:** Для генерации `AUTH_SECRET` используйте команду:
@@ -162,6 +165,18 @@ TELEGRAM_BOT_TOKEN="your-bot-token"
 > ```bash
 > openssl rand -base64 32
 > ```
+>
+> или:
+>
+> ```bash
+> node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+> ```
+
+```env
+# Telegram бот
+TELEGRAM_BOT_TOKEN="your-bot-token"
+TELEGRAM_MANAGER_IDS="123456789,987654321"
+```
 
 ---
 
